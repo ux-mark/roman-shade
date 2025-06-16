@@ -9,7 +9,7 @@ const MultiBlindCalculator = ({
   const { Ruler, ShoppingCart, Scissors, Package } = lucideReact;
   
   const addBlind = () => {
-    if (blinds.length < 4) {
+    if (blinds.length < 10) {
       setBlinds([...blinds, { width: 80, height: 160 }]);
     }
   };
@@ -56,7 +56,7 @@ const MultiBlindCalculator = ({
           key: 'multi-controls',
           className: "flex gap-2"
         }, [
-          blinds.length < 4 && React.createElement('button', {
+          blinds.length < 10 && React.createElement('button', {
             key: 'add-button',
             onClick: addBlind,
             className: "px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
