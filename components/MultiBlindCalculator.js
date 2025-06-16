@@ -10,7 +10,7 @@ const MultiBlindCalculator = ({
   
   const addBlind = () => {
     if (blinds.length < 10) {
-      setBlinds([...blinds, { width: 80, height: 160 }]);
+      setBlinds([...blinds, { width: 80, height: 160, name: `Blind ${blinds.length + 1}` }]);
     }
   };
 
@@ -22,7 +22,13 @@ const MultiBlindCalculator = ({
 
   const updateBlind = (index, field, value) => {
     const newBlinds = [...blinds];
-    newBlinds[index][field] = Number(value);
+    if (field === 'name') {
+      // For name field, store as string
+      newBlinds[index][field] = value;
+    } else {
+      // For numeric fields, convert to number
+      newBlinds[index][field] = Number(value);
+    }
     setBlinds(newBlinds);
   };
 
@@ -40,10 +46,13 @@ const MultiBlindCalculator = ({
       React.createElement('div', {
         key: 'multi-header',
         className: "flex items-center justify-between mb-4"
+      }, [      React.createElement('div', {
+        key: 'multi-header-container',
+        className: "flex flex-col md:flex-row md:items-center md:justify-between mb-4"
       }, [
         React.createElement('h3', {
           key: 'multi-title',
-          className: "text-lg font-semibold flex items-center gap-2"
+          className: "text-lg font-semibold flex items-center gap-2 mb-3 md:mb-0"
         }, [
           React.createElement(Ruler, {
             key: 'ruler-icon',
@@ -52,6 +61,30 @@ const MultiBlindCalculator = ({
           }),
           `Multiple Blind Dimensions (${blinds.length} blinds)`
         ]),
+        
+        // Fabric width control
+        React.createElement('div', {
+          key: 'fabric-width-control',
+          className: "flex items-end gap-3"
+        }, [
+          React.createElement('div', null, [
+            React.createElement('label', {
+              className: "block text-sm font-medium text-gray-700 mb-1"
+            }, `Fabric Width ${units === 'metric' ? '(cm)' : '(inches)'}`),
+            React.createElement('input', {
+              type: "number",
+              value: units === 'metric' ? fabricWidth : Math.round(fabricWidth / 2.54 * 10) / 10,
+              onChange: (e) => setFabricWidth(units === 'metric' ? Number(e.target.value) : Number(e.target.value) * 2.54),
+              min: units === 'metric' ? "90" : "36",
+              max: units === 'metric' ? "300" : "120",
+              className: "w-24 p-2 border border-gray-300 rounded-md"
+            })
+          ]),
+          React.createElement('p', {
+            className: "text-sm text-gray-500"
+          }, units === 'metric' ? `= ${BlindCalculations.cmToFeetInches(fabricWidth)}` : `= ${fabricWidth.toFixed(1)}cm`)
+        ])
+      ]),
         React.createElement('div', {
           key: 'multi-controls',
           className: "flex gap-2"
@@ -78,8 +111,38 @@ const MultiBlindCalculator = ({
         }, [
           React.createElement('h4', {
             key: `blind-${index}-title`,
-            className: "font-medium text-blue-800 mb-3"
-          }, `Blind ${index + 1}`),
+            className: "font-medium text-blue-800 mb-3 flex items-center justify-between"
+          }, [
+            `Blind ${index + 1}`,
+            React.createElement('span', {
+              key: `blind-${index}-id`,
+              className: "text-xs bg-blue-100 px-2 py-1 rounded-full text-blue-700"
+            }, `#${index + 1}`)
+          ]),
+          
+          // Name input field
+          React.createElement('div', {
+            key: `blind-${index}-name-container`,
+            className: "mb-4"
+          }, [
+            React.createElement('label', {
+              key: `blind-${index}-name-label`,
+              className: "block text-sm font-medium text-gray-700 mb-2"
+            }, "Blind Name (for reference)"),
+            React.createElement('input', {
+              key: `blind-${index}-name-input`,
+              type: "text",
+              value: blind.name || `Blind ${index + 1}`,
+              onChange: (e) => updateBlind(index, 'name', e.target.value),
+              placeholder: `Blind ${index + 1}`,
+              className: "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            }),
+            React.createElement('p', {
+              key: `blind-${index}-name-hint`,
+              className: "text-sm text-gray-500 mt-1"
+            }, "E.g. Living Room, Kitchen, Bedroom Window, etc.")
+          ]),
+          
           React.createElement('div', {
             key: `blind-${index}-inputs`,
             className: "grid md:grid-cols-2 gap-4"
@@ -160,7 +223,13 @@ const MultiBlindCalculator = ({
           React.createElement('h4', {
             key: `cutting-${index}-title`,
             className: "font-medium text-green-800 mb-3"
-          }, `Blind ${req.blindIndex} (${BlindCalculations.formatSingleUnit(req.originalWidth, units)} × ${BlindCalculations.formatSingleUnit(req.originalHeight, units)} finished)`),
+          }, [
+            React.createElement('span', null, `${blinds[req.blindIndex-1].name || `Blind ${req.blindIndex}`}`),
+            React.createElement('span', { className: "text-xs bg-green-100 px-2 py-1 rounded-full text-green-700 ml-2" }, `#${req.blindIndex}`),
+            React.createElement('span', { className: "block text-sm font-normal mt-1" }, 
+              `(${BlindCalculations.formatSingleUnit(req.originalWidth, units)} × ${BlindCalculations.formatSingleUnit(req.originalHeight, units)} finished)`
+            )
+          ]),
           React.createElement('div', {
             key: `cutting-${index}-details`,
             className: "grid md:grid-cols-2 gap-4"
@@ -357,7 +426,10 @@ const MultiBlindCalculator = ({
           React.createElement('h4', {
             key: `blind-rings-title-${index}`,
             className: "font-medium text-gray-800 mb-3"
-          }, `Blind ${index + 1} - Ring Layout`),
+          }, [
+            React.createElement('span', null, `${blind.name || `Blind ${index + 1}`} - Ring Layout`),
+            React.createElement('span', { className: "text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-700 ml-2" }, `#${index + 1}`)
+          ]),
           React.createElement('div', {
             key: `blind-rings-details-${index}`,
             className: "mb-3 text-sm"
@@ -435,7 +507,10 @@ const MultiBlindCalculator = ({
             React.createElement('h5', {
               key: `blind-hardware-title-${index}`,
               className: "font-medium text-gray-700 mb-2"
-            }, `Blind ${index + 1} Hardware`),
+            }, [
+              React.createElement('span', null, `${blind.name || `Blind ${index + 1}`} Hardware`),
+              React.createElement('span', { className: "text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-700 ml-2" }, `#${index + 1}`)
+            ]),
             React.createElement('div', {
               key: `blind-hardware-details-${index}`,
               className: "grid md:grid-cols-2 gap-2 text-sm"
@@ -453,8 +528,16 @@ const MultiBlindCalculator = ({
                 BlindCalculations.formatSingleUnit(calculations.weightRodLength, units)
               ]),
               React.createElement('p', null, [
+                React.createElement('span', { className: "font-medium" }, 'Screw Eyes: '),
+                `${calculations.ringRows} pieces (1 for each column)`
+              ]),
+              React.createElement('p', null, [
+                React.createElement('span', { className: "font-medium" }, 'Cord Control: '),
+                '1 tension lock (recommended) or cord cleat'
+              ]),
+              React.createElement('p', null, [
                 React.createElement('span', { className: "font-medium" }, 'Cord Cleats: '),
-                blind.width < 100 ? '1 piece' : '2 pieces'
+                blind.width < 100 ? '1 piece (optional)' : '2 pieces (optional)'
               ])
             ])
           ]);
@@ -501,16 +584,29 @@ const MultiBlindCalculator = ({
             }, 0), units)
           ]),
           React.createElement('p', null, [
+            React.createElement('span', { className: "font-medium" }, 'Screw Eyes: '),
+            blinds.reduce((sum, blind) => {
+              const calculations = BlindCalculations.getBlindCalculations(blind.width, blind.height);
+              return sum + calculations.ringRows;
+            }, 0),
+            ' pieces'
+          ]),
+          React.createElement('p', null, [
+            React.createElement('span', { className: "font-medium" }, 'Tension Locks: '),
+            blinds.length,
+            ' pieces (recommended for safety)'
+          ]),
+          React.createElement('p', null, [
             React.createElement('span', { className: "font-medium" }, 'Cord Cleats: '),
             blinds.reduce((sum, blind) => sum + (blind.width < 100 ? 1 : 2), 0),
-            ' pieces'
+            ' pieces (optional if using tension locks)'
           ]),
           React.createElement('p', {
             colSpan: 2,
             className: "md:col-span-2 bg-blue-100 p-2 rounded mt-2"
           }, [
             React.createElement('span', { className: "font-medium" }, '💡 Tip: '),
-            'Consider ordering extra hardware and supplies (5-10% more) to account for any mistakes or future repairs.'
+            'Consider ordering extra hardware and supplies (5-10% more) to account for any mistakes or future repairs. Tension locks are recommended over cord cleats for child safety.'
           ])
         ])
       ])
@@ -540,7 +636,10 @@ const MultiBlindCalculator = ({
           React.createElement('h4', {
             key: `blind-cords-title-${index}`,
             className: "font-medium text-orange-800 mb-3"
-          }, `Blind ${index + 1} - Cord Lengths`),
+          }, [
+            React.createElement('span', null, `${blind.name || `Blind ${index + 1}`} - Cord Lengths`),
+            React.createElement('span', { className: "text-xs bg-orange-100 px-2 py-1 rounded-full text-orange-700 ml-2" }, `#${index + 1}`)
+          ]),
           
           React.createElement('div', {
             key: `blind-cords-grid-${index}`,
@@ -569,9 +668,7 @@ const MultiBlindCalculator = ({
               key: `blind-${index}-cord-total-text`,
               className: "font-medium"
             }, [
-              'Total cord for Blind ',
-              index + 1,
-              ': ',
+              `Total cord for ${blind.name || `Blind ${index + 1}`}: `,
               React.createElement('strong', {
                 key: `blind-${index}-cord-total-strong`
               }, BlindCalculations.formatSingleUnit(totalCordLength, units))
@@ -696,7 +793,13 @@ const MultiBlindCalculator = ({
             React.createElement('h5', {
               key: `blind-spacing-title-${index}`,
               className: "font-medium text-indigo-700 mb-2"
-            }, `Blind ${index + 1} (${BlindCalculations.formatSingleUnit(blind.width, units)} × ${BlindCalculations.formatSingleUnit(blind.height, units)})`),
+            }, [
+              React.createElement('span', null, `${blind.name || `Blind ${index + 1}`}`),
+              React.createElement('span', { className: "text-xs bg-indigo-100 px-2 py-1 rounded-full text-indigo-700 ml-2" }, `#${index + 1}`),
+              React.createElement('span', { className: "block text-sm font-normal mt-1" }, 
+                `(${BlindCalculations.formatSingleUnit(blind.width, units)} × ${BlindCalculations.formatSingleUnit(blind.height, units)})`
+              )
+            ]),
             React.createElement('p', { key: `spacing-horizontal-${index}` }, 
               `Horizontal: ~${BlindCalculations.formatSingleUnit(blind.width / (calculations.ringRows - 1), units)}`
             ),

@@ -324,12 +324,26 @@ const SingleBlindCalculator = ({
           }, 'Weight Rod: '),
           BlindCalculations.formatSingleUnit(calculations.weightRodLength, units)
         ]),
+        React.createElement('p', { key: 'screw-eyes' }, [
+          React.createElement('span', { 
+            key: 'screw-eyes-label',
+            className: "font-medium" 
+          }, 'Screw Eyes: '),
+          `${calculations.ringRows} pieces (1 for each column of rings)`
+        ]),
+        React.createElement('p', { key: 'cord-control' }, [
+          React.createElement('span', { 
+            key: 'cord-control-label',
+            className: "font-medium" 
+          }, 'Cord Control: '),
+          '1 tension lock (recommended) or cord cleat'
+        ]),
         React.createElement('p', { key: 'cord-cleats' }, [
           React.createElement('span', { 
             key: 'cord-cleats-label',
             className: "font-medium" 
           }, 'Cord Cleats: '),
-          '1-2 depending on width'
+          width < 100 ? '1 piece (optional if using tension lock)' : '2 pieces (optional if using tension lock)'
         ])
       ])
     ]),

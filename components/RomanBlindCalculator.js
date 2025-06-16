@@ -12,8 +12,8 @@ const RomanBlindCalculator = () => {
   const [fabricWidth, setFabricWidth] = useState(140);
   
   const [blinds, setBlinds] = useState([
-    { width: 80, height: 160 },
-    { width: 80, height: 160 }
+    { width: 80, height: 160, name: 'Blind 1' },
+    { width: 80, height: 160, name: 'Blind 2' }
   ]);
 
   return React.createElement('div', {
