@@ -46,13 +46,10 @@ const MultiBlindCalculator = ({
       React.createElement('div', {
         key: 'multi-header',
         className: "flex items-center justify-between mb-4"
-      }, [      React.createElement('div', {
-        key: 'multi-header-container',
-        className: "flex flex-col md:flex-row md:items-center md:justify-between mb-4"
       }, [
         React.createElement('h3', {
           key: 'multi-title',
-          className: "text-lg font-semibold flex items-center gap-2 mb-3 md:mb-0"
+          className: "text-lg font-semibold flex items-center gap-2"
         }, [
           React.createElement(Ruler, {
             key: 'ruler-icon',
@@ -61,30 +58,6 @@ const MultiBlindCalculator = ({
           }),
           `Multiple Blind Dimensions (${blinds.length} blinds)`
         ]),
-        
-        // Fabric width control
-        React.createElement('div', {
-          key: 'fabric-width-control',
-          className: "flex items-end gap-3"
-        }, [
-          React.createElement('div', null, [
-            React.createElement('label', {
-              className: "block text-sm font-medium text-gray-700 mb-1"
-            }, `Fabric Width ${units === 'metric' ? '(cm)' : '(inches)'}`),
-            React.createElement('input', {
-              type: "number",
-              value: units === 'metric' ? fabricWidth : Math.round(fabricWidth / 2.54 * 10) / 10,
-              onChange: (e) => setFabricWidth(units === 'metric' ? Number(e.target.value) : Number(e.target.value) * 2.54),
-              min: units === 'metric' ? "90" : "36",
-              max: units === 'metric' ? "300" : "120",
-              className: "w-24 p-2 border border-gray-300 rounded-md"
-            })
-          ]),
-          React.createElement('p', {
-            className: "text-sm text-gray-500"
-          }, units === 'metric' ? `= ${BlindCalculations.cmToFeetInches(fabricWidth)}` : `= ${fabricWidth.toFixed(1)}cm`)
-        ])
-      ]),
         React.createElement('div', {
           key: 'multi-controls',
           className: "flex gap-2"
@@ -279,7 +252,7 @@ const MultiBlindCalculator = ({
           className: "text-purple-600",
           size: 20
         }),
-        `Fabric Shopping Guide - ${blinds.length} Blinds`
+        `Fabric Shopping Guide - ${blinds.length} Blinds (${BlindCalculations.formatSingleUnit(fabricWidth, units)} width available)`
       ]),
       
       React.createElement('div', {
