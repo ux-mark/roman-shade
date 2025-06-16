@@ -7,7 +7,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <!-- Using Feather Icons instead of Lucide for better CDN support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { margin: 0; padding: 20px; background-color: #f8fafc; }
@@ -18,7 +19,74 @@
 
     <script type="text/babel">
         const { useState } = React;
-        const { Calculator, Ruler, Scissors, Package, BookOpen, ChevronDown, ChevronUp, AlertTriangle, CheckCircle } = lucide;
+        
+        // Simple icon components using SVG
+        const Calculator = ({ className }) => React.createElement('svg', { 
+          className, width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 
+        }, [
+          React.createElement('rect', { key: 1, x: 4, y: 2, width: 16, height: 20, rx: 2 }),
+          React.createElement('line', { key: 2, x1: 8, x2: 16, y1: 6, y2: 6 }),
+          React.createElement('line', { key: 3, x1: 16, x2: 16, y1: 14, y2: 18 }),
+          React.createElement('path', { key: 4, d: 'm9 9h0m0 4h0m4-4h0m0 4h0' })
+        ]);
+
+        const Ruler = ({ className }) => React.createElement('svg', { 
+          className, width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 
+        }, [
+          React.createElement('path', { key: 1, d: 'M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z' }),
+          React.createElement('path', { key: 2, d: 'm14.5 12.5 2-2' }),
+          React.createElement('path', { key: 3, d: 'm11.5 9.5 2-2' }),
+          React.createElement('path', { key: 4, d: 'm8.5 6.5 2-2' }),
+          React.createElement('path', { key: 5, d: 'm17.5 15.5 2-2' })
+        ]);
+
+        const Scissors = ({ className }) => React.createElement('svg', { 
+          className, width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 
+        }, [
+          React.createElement('circle', { key: 1, cx: 6, cy: 6, r: 3 }),
+          React.createElement('path', { key: 2, d: 'l8.5 8.5' }),
+          React.createElement('circle', { key: 3, cx: 6, cy: 18, r: 3 }),
+          React.createElement('path', { key: 4, d: 'm20.5 3.5-8.5 8.5' })
+        ]);
+
+        const Package = ({ className }) => React.createElement('svg', { 
+          className, width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 
+        }, [
+          React.createElement('path', { key: 1, d: 'm7.5 4.27 9 5.15' }),
+          React.createElement('path', { key: 2, d: 'M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z' }),
+          React.createElement('path', { key: 3, d: 'm3.3 7 8.7 5 8.7-5' }),
+          React.createElement('path', { key: 4, d: 'M12 22V12' })
+        ]);
+
+        const BookOpen = ({ className }) => React.createElement('svg', { 
+          className, width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 
+        }, [
+          React.createElement('path', { key: 1, d: 'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z' }),
+          React.createElement('path', { key: 2, d: 'M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z' })
+        ]);
+
+        const ChevronDown = ({ className }) => React.createElement('svg', { 
+          className, width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 
+        }, React.createElement('path', { d: 'm6 9 6 6 6-6' }));
+
+        const ChevronUp = ({ className }) => React.createElement('svg', { 
+          className, width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 
+        }, React.createElement('path', { d: 'm18 15-6-6-6 6' }));
+
+        const AlertTriangle = ({ className }) => React.createElement('svg', { 
+          className, width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 
+        }, [
+          React.createElement('path', { key: 1, d: 'm21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z' }),
+          React.createElement('path', { key: 2, d: 'M12 9v4' }),
+          React.createElement('path', { key: 3, d: 'm12 17 .01 0' })
+        ]);
+
+        const CheckCircle = ({ className }) => React.createElement('svg', { 
+          className, width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 
+        }, [
+          React.createElement('path', { key: 1, d: 'M22 11.08V12a10 10 0 1 1-5.93-9.14' }),
+          React.createElement('path', { key: 2, d: 'm9 11 3 3L22 4' })
+        ]);
 
         const RomanShadeCalculator = () => {
           const [width, setWidth] = useState(80);
