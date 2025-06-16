@@ -1,5 +1,4 @@
-// No need for Lucide icons, using emojis instead
-
+// SingleBlindCalculator.js
 const SingleBlindCalculator = ({ 
   width, 
   height, 
@@ -11,6 +10,9 @@ const SingleBlindCalculator = ({
   const calculations = BlindCalculations.getBlindCalculations(width, height);
   const ringPositions = BlindCalculations.getRingPositionsForBlind(width);
   const cordLengths = BlindCalculations.getCordLengthsForBlind(width, height);
+  
+  // Get Lucide icons
+  const { Ruler, Package, ShoppingCart, Scissors } = lucideReact;
 
   return React.createElement('div', { key: 'single-blind-calculator' }, [
     // Single blind dimensions
@@ -21,7 +23,14 @@ const SingleBlindCalculator = ({
       React.createElement('h2', {
         key: 'dimensions-title',
         className: "text-xl font-semibold mb-4 flex items-center gap-2"
-      }, '📏 Finished Blind Dimensions'),
+      }, [
+        React.createElement(Ruler, {
+          key: 'ruler-icon',
+          className: "text-blue-600",
+          size: 20
+        }),
+        'Finished Blind Dimensions'
+      ]),
       React.createElement('div', {
         key: 'dimensions-inputs',
         className: "grid md:grid-cols-2 gap-4"
@@ -81,7 +90,14 @@ const SingleBlindCalculator = ({
         React.createElement('h3', {
           key: 'face-title',
           className: "text-lg font-semibold mb-4 flex items-center gap-2"
-        }, '✂️ Face Fabric'),
+        }, [
+          React.createElement(Scissors, {
+            key: 'scissors-icon1',
+            className: "text-green-600",
+            size: 20
+          }),
+          'Face Fabric'
+        ]),
         React.createElement('div', {
           key: 'face-measurements',
           className: "space-y-2"
@@ -91,14 +107,14 @@ const SingleBlindCalculator = ({
               key: 'face-width-label',
               className: "font-medium" 
             }, 'Width: '),
-            BlindCalculations.formatMeasurement(calculations.faceFabricWidth, units)
+            BlindCalculations.formatSingleUnit(calculations.faceFabricWidth, units)
           ]),
           React.createElement('p', { key: 'face-height' }, [
             React.createElement('span', { 
               key: 'face-height-label',
               className: "font-medium" 
             }, 'Height: '),
-            BlindCalculations.formatMeasurement(calculations.faceFabricHeight, units)
+            BlindCalculations.formatSingleUnit(calculations.faceFabricHeight, units)
           ]),
           React.createElement('p', {
             key: 'face-allowances',
@@ -114,7 +130,14 @@ const SingleBlindCalculator = ({
         React.createElement('h3', {
           key: 'lining-title',
           className: "text-lg font-semibold mb-4 flex items-center gap-2"
-        }, '✂️ Lining Fabric'),
+        }, [
+          React.createElement(Scissors, {
+            key: 'scissors-icon2',
+            className: "text-yellow-600",
+            size: 20
+          }),
+          'Lining Fabric'
+        ]),
         React.createElement('div', {
           key: 'lining-measurements',
           className: "space-y-2"
@@ -124,14 +147,14 @@ const SingleBlindCalculator = ({
               key: 'lining-width-label',
               className: "font-medium" 
             }, 'Width: '),
-            BlindCalculations.formatMeasurement(calculations.liningWidth, units)
+            BlindCalculations.formatSingleUnit(calculations.liningWidth, units)
           ]),
           React.createElement('p', { key: 'lining-height' }, [
             React.createElement('span', { 
               key: 'lining-height-label',
               className: "font-medium" 
             }, 'Height: '),
-            BlindCalculations.formatMeasurement(calculations.liningHeight, units)
+            BlindCalculations.formatSingleUnit(calculations.liningHeight, units)
           ]),
           React.createElement('p', {
             key: 'lining-allowances',
@@ -149,7 +172,14 @@ const SingleBlindCalculator = ({
       React.createElement('h3', {
         key: 'shopping-title',
         className: "text-lg font-semibold mb-4 flex items-center gap-2"
-      }, '🛒 Fabric Shopping Guide'),
+      }, [
+        React.createElement(ShoppingCart, { 
+          key: 'shopping-cart',
+          className: "text-purple-600",
+          size: 20
+        }),
+        'Fabric Shopping Guide'
+      ]),
       
       React.createElement('div', {
         key: 'shopping-grid',
@@ -251,62 +281,51 @@ const SingleBlindCalculator = ({
 
     // Hardware & Supplies
     React.createElement('div', {
-      key: 'hardware-section',
+      key: 'hardware',
       className: "bg-gray-50 p-6 rounded-lg mb-8"
     }, [
       React.createElement('h3', {
         key: 'hardware-title',
         className: "text-lg font-semibold mb-4 flex items-center gap-2"
-      }, '📦 Hardware & Supplies'),
+      }, [
+        React.createElement(Package, {
+          key: 'package-icon',
+          className: "text-gray-600",
+          size: 20
+        }),
+        'Hardware & Supplies'
+      ]),
       React.createElement('div', {
         key: 'hardware-grid',
         className: "grid md:grid-cols-2 gap-4 text-sm"
       }, [
-        React.createElement('div', { key: 'hardware-left' }, [
-          React.createElement('p', { key: 'mounting-board' }, [
-            React.createElement('span', { 
-              key: 'mounting-label',
-              className: "font-medium" 
-            }, 'Mounting Board: '),
-            `${BlindCalculations.formatMeasurement(calculations.mountingBoardLength, units)} long`
-          ]),
-          React.createElement('p', { key: 'weight-rod' }, [
-            React.createElement('span', { 
-              key: 'weight-label',
-              className: "font-medium" 
-            }, 'Weight Rod: '),
-            BlindCalculations.formatMeasurement(calculations.weightRodLength, units)
-          ]),
-          React.createElement('p', { key: 'blind-rings' }, [
-            React.createElement('span', { 
-              key: 'rings-label',
-              className: "font-medium" 
-            }, 'Blind Rings: '),
-            `${calculations.ringRows * calculations.verticalRings} pieces`
-          ])
+        React.createElement('p', { key: 'rings' }, [
+          React.createElement('span', { 
+            key: 'rings-label',
+            className: "font-medium" 
+          }, 'Rings: '),
+          `${calculations.ringRows * calculations.verticalRings} rings (${calculations.ringRows} columns × ${calculations.verticalRings} rows)`
         ]),
-        React.createElement('div', { key: 'hardware-right' }, [
-          React.createElement('p', { key: 'ring-columns' }, [
-            React.createElement('span', { 
-              key: 'columns-label',
-              className: "font-medium" 
-            }, 'Ring Columns: '),
-            calculations.ringRows
-          ]),
-          React.createElement('p', { key: 'ring-rows' }, [
-            React.createElement('span', { 
-              key: 'rows-label',
-              className: "font-medium" 
-            }, 'Ring Rows: '),
-            calculations.verticalRings
-          ]),
-          React.createElement('p', { key: 'screw-eyes' }, [
-            React.createElement('span', { 
-              key: 'screws-label',
-              className: "font-medium" 
-            }, 'Screw Eyes: '),
-            `${calculations.ringRows} pieces`
-          ])
+        React.createElement('p', { key: 'mounting-board' }, [
+          React.createElement('span', { 
+            key: 'mounting-board-label',
+            className: "font-medium" 
+          }, 'Mounting Board: '),
+          BlindCalculations.formatSingleUnit(calculations.mountingBoardLength, units)
+        ]),
+        React.createElement('p', { key: 'weight-rod' }, [
+          React.createElement('span', { 
+            key: 'weight-rod-label',
+            className: "font-medium" 
+          }, 'Weight Rod: '),
+          BlindCalculations.formatSingleUnit(calculations.weightRodLength, units)
+        ]),
+        React.createElement('p', { key: 'cord-cleats' }, [
+          React.createElement('span', { 
+            key: 'cord-cleats-label',
+            className: "font-medium" 
+          }, 'Cord Cleats: '),
+          '1-2 depending on width'
         ])
       ])
     ]),
@@ -322,79 +341,72 @@ const SingleBlindCalculator = ({
       }, '📍 Ring Placement Layout'),
       
       React.createElement('div', {
-        key: 'horizontal-positions',
+        key: 'ring-info',
         className: "mb-4"
       }, [
-        React.createElement('h4', {
-          key: 'horizontal-title',
-          className: "font-medium mb-2"
+        React.createElement('p', { 
+          key: 'ring-count',
+          className: "font-medium" 
+        }, `Total Rings: ${calculations.ringRows * calculations.verticalRings} (${calculations.ringRows} columns × ${calculations.verticalRings} rows)`),
+        React.createElement('p', { 
+          key: 'ring-spacing',
+          className: "text-sm text-gray-600" 
+        }, 'Position columns across the width with rings in each column.')
+      ]),
+      
+      React.createElement('div', {
+        key: 'ring-horizontal',
+        className: "mb-4"
+      }, [
+        React.createElement('h4', { 
+          key: 'ring-horizontal-title',
+          className: "text-md font-medium mb-2" 
         }, 'Horizontal Ring Positions (from left edge):'),
         React.createElement('div', {
-          key: 'position-tags',
+          key: 'ring-horizontal-positions',
           className: "flex flex-wrap gap-2"
-        }, ringPositions.map((pos, index) => 
+        }, ringPositions.map((pos, idx) => 
           React.createElement('span', {
-            key: `pos-${index}`,
-            className: "bg-blue-100 px-3 py-1 rounded"
-          }, `Column ${index + 1}: ${BlindCalculations.formatMeasurement(Math.round(pos * 10) / 10, units)}`)
+            key: `ring-pos-${idx}`,
+            className: "px-2 py-1 bg-blue-100 rounded text-sm"
+          }, `${BlindCalculations.formatSingleUnit(pos, units)}`)
         ))
       ]),
 
+      // Blind Visualization
       React.createElement('div', {
-        key: 'vertical-spacing',
-        className: "mb-4"
-      }, [
-        React.createElement('h4', {
-          key: 'vertical-title',
-          className: "font-medium mb-2"
-        }, 'Vertical Ring Spacing:'),
-        React.createElement('p', { key: 'vertical-info' }, `Every ${BlindCalculations.formatMeasurement(20, units)} starting from bottom hem`),
-        React.createElement('p', {
-          key: 'vertical-total',
-          className: "text-sm text-gray-600"
-        }, `Total: ${calculations.verticalRings} horizontal rows`)
-      ]),
-
-      // Visual Ring Layout
-      React.createElement('div', {
-        key: 'visual-layout',
+        key: 'blind-visual',
         className: "border-2 border-dashed border-gray-300 p-4 bg-white rounded-lg"
       }, [
         React.createElement('div', {
-          key: 'visual-title',
-          className: "text-center text-sm text-gray-600 mb-2"
-        }, 'Visual Ring Layout'),
-        React.createElement('div', {
-          key: 'visual-grid',
-          className: "font-mono text-xs"
-        }, Array.from({ length: calculations.verticalRings }, (_, row) => 
-          React.createElement('div', {
-            key: `row-${row}`,
-            className: "flex justify-between items-center py-1"
-          }, [
-            React.createElement('span', {
-              key: `height-${row}`,
-              className: "text-gray-500 w-16"
-            }, `${BlindCalculations.formatMeasurement((calculations.verticalRings - 1 - row) * 20, units)}:`),
-            React.createElement('div', {
-              key: `rings-${row}`,
-              className: "flex-1 flex justify-around mx-4"
-            }, ringPositions.map((_, col) => 
-              React.createElement('span', {
-                key: `ring-${row}-${col}`,
-                className: "text-blue-600 text-lg"
-              }, '○')
-            )),
-            React.createElement('span', {
-              key: `row-num-${row}`,
-              className: "text-gray-400 w-12 text-right"
-            }, `Row ${calculations.verticalRings - row}`)
-          ])
-        )),
-        React.createElement('div', {
-          key: 'visual-footer',
-          className: "mt-2 text-xs text-gray-500 text-center"
-        }, 'Bottom of blind ↑ • Each ○ represents a ring position • Top of blind')
+          key: 'blind-container',
+          className: "relative bg-gray-50 border border-gray-200",
+          style: {
+            width: '100%',
+            height: '160px'
+          }
+        }, [
+          // Rings visualization
+          ...ringPositions.map((xPos, colIdx) => {
+            const verticalPositions = [];
+            const verticalSpacing = height / (calculations.verticalRings + 1);
+            
+            for (let rowIdx = 1; rowIdx <= calculations.verticalRings; rowIdx++) {
+              verticalPositions.push(rowIdx * verticalSpacing);
+            }
+
+            return verticalPositions.map((yPos, rowIdx) => 
+              React.createElement('div', {
+                key: `ring-${colIdx}-${rowIdx}`,
+                className: "absolute w-2 h-2 bg-blue-600 rounded-full transform -translate-x-1/2 -translate-y-1/2",
+                style: {
+                  left: `${(xPos / width) * 100}%`,
+                  top: `${(yPos / height) * 100}%`
+                }
+              })
+            );
+          }).flat()
+        ])
       ])
     ]),
 
@@ -404,46 +416,41 @@ const SingleBlindCalculator = ({
       className: "bg-orange-50 p-6 rounded-lg mb-8"
     }, [
       React.createElement('h3', {
-        key: 'cord-title',
+        key: 'cord-lengths-title',
         className: "text-lg font-semibold mb-4"
       }, '🧵 Cord Lengths (Right-hand Draw)'),
       React.createElement('div', {
-        key: 'cord-grid',
+        key: 'cord-lengths-grid',
         className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"
-      }, cordLengths.map((length, index) => 
+      }, cordLengths.map((length, idx) => 
         React.createElement('div', {
-          key: `cord-${index}`,
-          className: "text-center"
+          key: `cord-${idx}`,
+          className: "p-3 bg-white rounded-lg border border-orange-200"
         }, [
-          React.createElement('div', {
-            key: `cord-box-${index}`,
-            className: "bg-orange-200 p-3 rounded"
-          }, [
-            React.createElement('div', {
-              key: `cord-col-${index}`,
-              className: "font-medium"
-            }, `Column ${index + 1}`),
-            React.createElement('div', {
-              key: `cord-length-${index}`,
-              className: "text-sm"
-            }, BlindCalculations.formatMeasurement(length, units))
-          ])
+          React.createElement('p', {
+            key: `cord-${idx}-title`,
+            className: "font-medium text-orange-800"
+          }, `Cord ${idx + 1}`),
+          React.createElement('p', {
+            key: `cord-${idx}-length`,
+            className: "text-sm"
+          }, BlindCalculations.formatSingleUnit(length, units))
         ])
       )),
       React.createElement('p', {
-        key: 'cord-total',
+        key: 'cord-note',
         className: "text-sm text-gray-600 mt-3"
-      }, React.createElement('em', null, `Total cord needed: approximately ${BlindCalculations.formatMeasurement(Math.round(cordLengths.reduce((a, b) => a + b, 0) / 100) * 100, units)}`)),
+      }, 'Cords are numbered left to right. First cord (leftmost) is the longest as it travels further across the headrail.'),
       React.createElement('div', {
-        key: 'cord-tip',
+        key: 'cord-total',
         className: "mt-4 p-3 bg-orange-100 rounded"
       }, [
         React.createElement('p', {
-          key: 'cord-tip-text',
-          className: "text-sm text-orange-800"
+          key: 'cord-total-text',
+          className: "font-medium"
         }, [
-          React.createElement('strong', null, 'Tip: '),
-          'Leftmost cord is longest (travels furthest), rightmost cord is shortest. This creates the pull-cord bundle on the right side.'
+          'Total cord needed: ',
+          React.createElement('strong', null, BlindCalculations.formatSingleUnit(cordLengths.reduce((sum, length) => sum + length, 0), units))
         ])
       ])
     ]),
@@ -461,53 +468,39 @@ const SingleBlindCalculator = ({
         key: 'construction-grid',
         className: "grid md:grid-cols-3 gap-4 text-sm"
       }, [
-        React.createElement('div', { key: 'construction-left' }, [
-          React.createElement('p', { key: 'side-hem' }, [
-            React.createElement('span', { 
-              key: 'side-hem-label',
-              className: "font-medium" 
-            }, 'Side Hem: '),
-            BlindCalculations.formatMeasurement(3.8, units)
-          ]),
-          React.createElement('p', { key: 'bottom-hem' }, [
-            React.createElement('span', { 
-              key: 'bottom-hem-label',
-              className: "font-medium" 
-            }, 'Bottom Hem: '),
-            BlindCalculations.formatMeasurement(30.5, units)
-          ])
+        React.createElement('div', {
+          key: 'seam-allowances',
+          className: "p-3 bg-white rounded border border-indigo-200"
+        }, [
+          React.createElement('h4', {
+            key: 'seam-title',
+            className: "font-medium text-indigo-800 mb-1"
+          }, 'Seam Allowances'),
+          React.createElement('p', null, `Top edge: ${BlindCalculations.formatSingleUnit(2.5, units)}`),
+          React.createElement('p', null, `Side edges: ${BlindCalculations.formatSingleUnit(7, units)} each`),
+          React.createElement('p', null, `Bottom hem: ${BlindCalculations.formatSingleUnit(30.5, units)}`)
         ]),
-        React.createElement('div', { key: 'construction-middle' }, [
-          React.createElement('p', { key: 'weight-pocket' }, [
-            React.createElement('span', { 
-              key: 'weight-pocket-label',
-              className: "font-medium" 
-            }, 'Weight Pocket: '),
-            BlindCalculations.formatMeasurement(2.8, units)
-          ]),
-          React.createElement('p', { key: 'top-hem' }, [
-            React.createElement('span', { 
-              key: 'top-hem-label',
-              className: "font-medium" 
-            }, 'Top Hem: '),
-            BlindCalculations.formatMeasurement(2.5, units)
-          ])
+        React.createElement('div', {
+          key: 'rod-pockets',
+          className: "p-3 bg-white rounded border border-indigo-200"
+        }, [
+          React.createElement('h4', {
+            key: 'rod-title',
+            className: "font-medium text-indigo-800 mb-1"
+          }, 'Rod Pocket'),
+          React.createElement('p', null, `Depth: ${BlindCalculations.formatSingleUnit(2.5, units)}`),
+          React.createElement('p', null, `Position from bottom: ${BlindCalculations.formatSingleUnit(5, units)}`)
         ]),
-        React.createElement('div', { key: 'construction-right' }, [
-          React.createElement('p', { key: 'ring-spacing' }, [
-            React.createElement('span', { 
-              key: 'ring-spacing-label',
-              className: "font-medium" 
-            }, 'Ring Spacing: '),
-            `~${BlindCalculations.formatSingleUnit(16, units)}`
-          ]),
-          React.createElement('p', { key: 'edge-to-ring' }, [
-            React.createElement('span', { 
-              key: 'edge-to-ring-label',
-              className: "font-medium" 
-            }, 'Edge to First Ring: '),
-            BlindCalculations.formatMeasurement(2.5, units)
-          ])
+        React.createElement('div', {
+          key: 'ring-spacing',
+          className: "p-3 bg-white rounded border border-indigo-200"
+        }, [
+          React.createElement('h4', {
+            key: 'spacing-title',
+            className: "font-medium text-indigo-800 mb-1"
+          }, 'Ring Spacing'),
+          React.createElement('p', null, `Horizontal: ~${BlindCalculations.formatSingleUnit(width / (calculations.ringRows - 1), units)}`),
+          React.createElement('p', null, `Vertical: ~${BlindCalculations.formatSingleUnit(height / (calculations.verticalRings + 1), units)}`)
         ])
       ])
     ])

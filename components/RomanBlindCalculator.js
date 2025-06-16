@@ -1,7 +1,10 @@
-const { useState } = React;
-// Use emoji instead of Lucide icons since we're having issues with them
-
+// RomanBlindCalculator.js - Main calculator component
 const RomanBlindCalculator = () => {
+  const { useState } = React;
+  
+  // Get Lucide icons
+  const { Calculator, Package, Ruler, ShoppingCart, Scissors } = lucideReact;
+
   const [units, setUnits] = useState('metric');
   const [useDualCalculator, setUseDualCalculator] = useState(false);
   const [width, setWidth] = useState(80);
@@ -24,7 +27,14 @@ const RomanBlindCalculator = () => {
       React.createElement('h1', {
         key: 'title',
         className: "text-3xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2"
-      }, '📊 Roman Blind Calculator'),
+      }, [
+        React.createElement(Calculator, {
+          key: 'calculator-icon',
+          className: "text-blue-600",
+          size: 24
+        }),
+        'Roman Blind Calculator'
+      ]),
       React.createElement('p', {
         key: 'subtitle',
         className: "text-gray-600"
@@ -102,7 +112,14 @@ const RomanBlindCalculator = () => {
       React.createElement('h3', {
         key: 'fabric-title',
         className: "text-lg font-semibold mb-4 flex items-center gap-2"
-      }, '📦 Fabric Purchase Settings'),
+      }, [
+        React.createElement(Package, {
+          key: 'package-icon',
+          className: "text-amber-600",
+          size: 20
+        }),
+        'Fabric Purchase Settings'
+      ]),
       React.createElement('div', { key: 'fabric-input' }, [
         React.createElement('label', {
           key: 'fabric-label',

@@ -4,15 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roman Blind Calculator</title>
+    <!-- React and ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Custom styles -->
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- SVG Icons Implementation -->
+    <script>
+        // Create global lucideReact object with SVG-based icon components for our app
+        window.lucideReact = {};
+        
+        // Define SVG paths for the icons we need (from Lucide)
+        const iconPaths = {
+            Calculator: 'M9 7h6m-6 4h6m-6 4h6M9 7h6m-6 4h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2Z',
+            Package: 'm7.5 4.27 4.5 2.03m-4.5-2.03-3.9 1.73a.6.6 0 0 0-.35.55v8.84c0 .23.13.44.35.55l3.9 1.73m0-13.4V20m0-15.73L12 2l4.5 2.27m-9 13.46 4.5 2.03m0 0 4.5-2.03m0 0 3.9-1.73a.6.6 0 0 0 .35-.55V6.55a.6.6 0 0 0-.35-.55L16.5 4.27m0 0V20',
+            Ruler: 'M5 4h14M5 8h4m-4 4h14m-10 4h6m-10 4h14',
+            Scissors: 'M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z M8.5 8.5 20 20M8.5 15.5 20 4',
+            ShoppingCart: 'M4 19a2 2 0 1 0 4 0 2 2 0 0 0-4 0Zm11 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0ZM2 3h2l2.64 13.2a2 2 0 0 0 2 1.61h8.72a2 2 0 0 0 2-1.61L20 8H5.62'
+        };
+        
+        // Create React components from SVG paths
+        Object.keys(iconPaths).forEach(iconName => {
+            window.lucideReact[iconName] = (props) => {
+                return React.createElement('svg', {
+                    xmlns: 'http://www.w3.org/2000/svg',
+                    width: props.size || 24,
+                    height: props.size || 24, 
+                    viewBox: '0 0 24 24',
+                    fill: 'none',
+                    stroke: 'currentColor',
+                    strokeWidth: 2,
+                    strokeLinecap: 'round',
+                    strokeLinejoin: 'round',
+                    className: props.className || '',
+                    ...props
+                }, React.createElement('path', { d: iconPaths[iconName] }));
+            };
+        });
+    </script>
 </head>
 <body>
     <div id="root"></div>
     
+    <!-- Load our components -->
     <script type="text/babel" src="components/BlindCalculations.js"></script>
     <script type="text/babel" src="components/MultiBlindCalculator.js"></script>
     <script type="text/babel" src="components/SingleBlindCalculator.js"></script>
