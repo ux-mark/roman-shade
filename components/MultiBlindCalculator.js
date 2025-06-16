@@ -407,6 +407,60 @@ const MultiBlindCalculator = ({
         ])
       })),
 
+      // Hardware & Supplies for Individual Blinds
+      React.createElement('div', {
+        key: 'hardware-details',
+        className: "mt-6"
+      }, [
+        React.createElement('h4', {
+          key: 'hardware-details-title',
+          className: "font-medium text-gray-800 mb-3 flex items-center gap-2"
+        }, [
+          React.createElement(Package, {
+            key: 'package-icon-details',
+            className: "text-gray-600",
+            size: 18
+          }),
+          'Hardware & Supplies - Individual Blinds'
+        ]),
+        React.createElement('div', {
+          key: 'hardware-blinds-list',
+          className: "space-y-4"
+        }, blinds.map((blind, index) => {
+          const calculations = BlindCalculations.getBlindCalculations(blind.width, blind.height);
+          return React.createElement('div', {
+            key: `blind-hardware-${index}`,
+            className: "bg-white p-3 rounded-lg border border-gray-200"
+          }, [
+            React.createElement('h5', {
+              key: `blind-hardware-title-${index}`,
+              className: "font-medium text-gray-700 mb-2"
+            }, `Blind ${index + 1} Hardware`),
+            React.createElement('div', {
+              key: `blind-hardware-details-${index}`,
+              className: "grid md:grid-cols-2 gap-2 text-sm"
+            }, [
+              React.createElement('p', null, [
+                React.createElement('span', { className: "font-medium" }, 'Rings: '),
+                `${calculations.ringRows * calculations.verticalRings} rings (${calculations.ringRows} columns × ${calculations.verticalRings} rows)`
+              ]),
+              React.createElement('p', null, [
+                React.createElement('span', { className: "font-medium" }, 'Mounting Board: '),
+                BlindCalculations.formatSingleUnit(calculations.mountingBoardLength, units)
+              ]),
+              React.createElement('p', null, [
+                React.createElement('span', { className: "font-medium" }, 'Weight Rod: '),
+                BlindCalculations.formatSingleUnit(calculations.weightRodLength, units)
+              ]),
+              React.createElement('p', null, [
+                React.createElement('span', { className: "font-medium" }, 'Cord Cleats: '),
+                blind.width < 100 ? '1 piece' : '2 pieces'
+              ])
+            ])
+          ]);
+        }))
+      ]),
+      
       // Combined Hardware Summary
       React.createElement('div', {
         key: 'combined-hardware',
@@ -425,23 +479,252 @@ const MultiBlindCalculator = ({
             blinds.reduce((sum, blind) => {
               const data = BlindCalculations.getBlindRingData(blind.width, blind.height);
               return sum + data.totalRings;
-            }, 0)
+            }, 0),
+            ' pieces'
           ]),
           React.createElement('p', null, [
             React.createElement('span', { className: "font-medium" }, 'Mounting Boards: '),
             blinds.reduce((sum, blind) => sum + 1, 0),
-            ' pieces'
+            ' pieces, total length: ',
+            BlindCalculations.formatSingleUnit(blinds.reduce((sum, blind) => {
+              const calculations = BlindCalculations.getBlindCalculations(blind.width, blind.height);
+              return sum + calculations.mountingBoardLength;
+            }, 0), units)
           ]),
           React.createElement('p', null, [
             React.createElement('span', { className: "font-medium" }, 'Weight Rods: '),
             blinds.reduce((sum, blind) => sum + 1, 0),
-            ' pieces'
+            ' pieces, total length: ',
+            BlindCalculations.formatSingleUnit(blinds.reduce((sum, blind) => {
+              const calculations = BlindCalculations.getBlindCalculations(blind.width, blind.height);
+              return sum + calculations.weightRodLength;
+            }, 0), units)
           ]),
           React.createElement('p', null, [
             React.createElement('span', { className: "font-medium" }, 'Cord Cleats: '),
-            blinds.reduce((sum, blind) => sum + 1, 0),
-            ' sets'
+            blinds.reduce((sum, blind) => sum + (blind.width < 100 ? 1 : 2), 0),
+            ' pieces'
+          ]),
+          React.createElement('p', {
+            colSpan: 2,
+            className: "md:col-span-2 bg-blue-100 p-2 rounded mt-2"
+          }, [
+            React.createElement('span', { className: "font-medium" }, '💡 Tip: '),
+            'Consider ordering extra hardware and supplies (5-10% more) to account for any mistakes or future repairs.'
           ])
+        ])
+      ])
+    ]),
+
+    // Cord Lengths for Multiple Blinds
+    React.createElement('div', {
+      key: 'multi-cord-lengths',
+      className: "bg-orange-50 p-6 rounded-lg mb-8"
+    }, [
+      React.createElement('h3', {
+        key: 'multi-cord-title',
+        className: "text-lg font-semibold mb-4"
+      }, '🧵 Cord Lengths - All Blinds (Right-hand Draw)'),
+      
+      React.createElement('div', {
+        key: 'multi-cord-blinds',
+        className: "space-y-8"
+      }, blinds.map((blind, index) => {
+        const cordLengths = BlindCalculations.getCordLengthsForBlind(blind.width, blind.height);
+        const totalCordLength = cordLengths.reduce((sum, length) => sum + length, 0);
+        
+        return React.createElement('div', {
+          key: `blind-cords-${index}`,
+          className: "bg-white p-4 rounded-lg border border-orange-200"
+        }, [
+          React.createElement('h4', {
+            key: `blind-cords-title-${index}`,
+            className: "font-medium text-orange-800 mb-3"
+          }, `Blind ${index + 1} - Cord Lengths`),
+          
+          React.createElement('div', {
+            key: `blind-cords-grid-${index}`,
+            className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3"
+          }, cordLengths.map((length, cordIdx) => 
+            React.createElement('div', {
+              key: `blind-${index}-cord-${cordIdx}`,
+              className: "p-2 bg-orange-50 rounded-lg border border-orange-100"
+            }, [
+              React.createElement('p', {
+                key: `blind-${index}-cord-${cordIdx}-title`,
+                className: "font-medium text-orange-800 text-sm"
+              }, `Cord ${cordIdx + 1}`),
+              React.createElement('p', {
+                key: `blind-${index}-cord-${cordIdx}-length`,
+                className: "text-sm"
+              }, BlindCalculations.formatSingleUnit(length, units))
+            ])
+          )),
+          
+          React.createElement('div', {
+            key: `blind-${index}-cord-total`,
+            className: "mt-3 p-2 bg-orange-100 rounded"
+          }, [
+            React.createElement('p', {
+              key: `blind-${index}-cord-total-text`,
+              className: "font-medium"
+            }, [
+              'Total cord for Blind ',
+              index + 1,
+              ': ',
+              React.createElement('strong', {
+                key: `blind-${index}-cord-total-strong`
+              }, BlindCalculations.formatSingleUnit(totalCordLength, units))
+            ])
+          ]),
+          
+          React.createElement('p', {
+            key: `blind-${index}-cord-note`,
+            className: "text-xs text-gray-600 mt-2"
+          }, 'Cords are numbered left to right. First cord (leftmost) is the longest.')
+        ]);
+      })),
+      
+      // Combined Cord Summary
+      React.createElement('div', {
+        key: 'combined-cord-summary',
+        className: "mt-6 bg-orange-200 p-4 rounded-lg"
+      }, [
+        React.createElement('h4', {
+          key: 'combined-cord-title',
+          className: "font-medium text-orange-900 mb-3"
+        }, `🧵 Combined Cord Summary (${blinds.length} Blinds)`),
+        React.createElement('div', {
+          key: 'combined-cord-total',
+          className: "text-lg font-medium text-center"
+        }, [
+          'Total cord needed: ',
+          React.createElement('strong', {
+            key: 'combined-cord-total-strong',
+            className: "text-orange-900"
+          }, BlindCalculations.formatSingleUnit(blinds.reduce((sum, blind) => {
+            const cordLengths = BlindCalculations.getCordLengthsForBlind(blind.width, blind.height);
+            return sum + cordLengths.reduce((cordSum, length) => cordSum + length, 0);
+          }, 0), units))
+        ]),
+        React.createElement('p', {
+          key: 'cord-recommendation',
+          className: "text-sm text-center text-orange-800 mt-2"
+        }, 'Recommendation: Buy an extra 10-15% cord length for safety margin')
+      ])
+    ]),
+
+    // Key Construction Measurements
+    React.createElement('div', {
+      key: 'construction-measurements',
+      className: "bg-indigo-50 p-6 rounded-lg mb-8"
+    }, [
+      React.createElement('h3', {
+        key: 'construction-title',
+        className: "text-lg font-semibold mb-4"
+      }, '📏 Key Construction Measurements'),
+      
+      // Common construction measurements that apply to all blinds
+      React.createElement('div', {
+        key: 'common-construction',
+        className: "mb-5"
+      }, [
+        React.createElement('h4', {
+          key: 'common-title',
+          className: "font-medium text-indigo-800 mb-3"
+        }, 'Common Construction Details (All Blinds)'),
+        React.createElement('div', {
+          key: 'common-grid',
+          className: "grid md:grid-cols-3 gap-4 text-sm"
+        }, [
+          React.createElement('div', {
+            key: 'seam-allowances',
+            className: "p-3 bg-white rounded border border-indigo-200"
+          }, [
+            React.createElement('h4', {
+              key: 'seam-title',
+              className: "font-medium text-indigo-800 mb-1"
+            }, 'Seam Allowances'),
+            React.createElement('p', { key: 'seam-top' }, `Top edge: ${BlindCalculations.formatSingleUnit(2.5, units)}`),
+            React.createElement('p', { key: 'seam-sides' }, `Side edges: ${BlindCalculations.formatSingleUnit(7, units)} each`),
+            React.createElement('p', { key: 'seam-bottom' }, `Bottom hem: ${BlindCalculations.formatSingleUnit(30.5, units)}`)
+          ]),
+          React.createElement('div', {
+            key: 'rod-pockets',
+            className: "p-3 bg-white rounded border border-indigo-200"
+          }, [
+            React.createElement('h4', {
+              key: 'rod-title',
+              className: "font-medium text-indigo-800 mb-1"
+            }, 'Rod Pocket'),
+            React.createElement('p', { key: 'rod-depth' }, `Depth: ${BlindCalculations.formatSingleUnit(2.5, units)}`),
+            React.createElement('p', { key: 'rod-position' }, `Position from bottom: ${BlindCalculations.formatSingleUnit(5, units)}`)
+          ]),
+          React.createElement('div', {
+            key: 'materials-info',
+            className: "p-3 bg-white rounded border border-indigo-200"
+          }, [
+            React.createElement('h4', {
+              key: 'materials-title',
+              className: "font-medium text-indigo-800 mb-1"
+            }, 'Materials'),
+            React.createElement('p', { key: 'materials-rings' }, 'Rings: Plastic or metal rings, ~1cm diameter'),
+            React.createElement('p', { key: 'materials-cord' }, 'Cord: Nylon or polyester blind cord, ~2mm diameter'),
+            React.createElement('p', { key: 'materials-weights' }, 'Weight rods: ~8mm diameter metal or plastic rod')
+          ])
+        ])
+      ]),
+      
+      // Individual blinds ring spacing
+      React.createElement('div', {
+        key: 'individual-spacing',
+        className: "mb-5"
+      }, [
+        React.createElement('h4', {
+          key: 'spacing-title',
+          className: "font-medium text-indigo-800 mb-3"
+        }, 'Ring Spacing - Individual Blinds'),
+        React.createElement('div', {
+          key: 'spacing-grid',
+          className: "grid md:grid-cols-2 gap-4"
+        }, blinds.map((blind, index) => {
+          const calculations = BlindCalculations.getBlindCalculations(blind.width, blind.height);
+          return React.createElement('div', {
+            key: `blind-spacing-${index}`,
+            className: "p-3 bg-white rounded border border-indigo-200"
+          }, [
+            React.createElement('h5', {
+              key: `blind-spacing-title-${index}`,
+              className: "font-medium text-indigo-700 mb-2"
+            }, `Blind ${index + 1} (${BlindCalculations.formatSingleUnit(blind.width, units)} × ${BlindCalculations.formatSingleUnit(blind.height, units)})`),
+            React.createElement('p', { key: `spacing-horizontal-${index}` }, 
+              `Horizontal: ~${BlindCalculations.formatSingleUnit(blind.width / (calculations.ringRows - 1), units)}`
+            ),
+            React.createElement('p', { key: `spacing-vertical-${index}` }, 
+              `Vertical: ~${BlindCalculations.formatSingleUnit(blind.height / (calculations.verticalRings + 1), units)}`
+            )
+          ]);
+        }))
+      ]),
+      
+      // Construction tips
+      React.createElement('div', {
+        key: 'construction-tips',
+        className: "p-4 bg-indigo-100 rounded-lg"
+      }, [
+        React.createElement('h4', {
+          key: 'tips-title',
+          className: "font-medium text-indigo-900 mb-2"
+        }, '💡 Construction Tips'),
+        React.createElement('ul', {
+          key: 'tips-list',
+          className: "list-disc pl-5 space-y-1 text-sm text-indigo-900"
+        }, [
+          React.createElement('li', { key: 'tips-1' }, 'For easier threading, use a large-eye needle to pull cord through rings'),
+          React.createElement('li', { key: 'tips-2' }, 'Pre-mark all ring positions before sewing to ensure alignment'),
+          React.createElement('li', { key: 'tips-3' }, 'Reinforce ring attachment points with extra stitching'),
+          React.createElement('li', { key: 'tips-4' }, 'Test cord operation before final assembly to ensure smooth movement'),
+          React.createElement('li', { key: 'tips-5' }, 'For wider blinds, consider adding support strips to prevent sagging')
         ])
       ])
     ])
