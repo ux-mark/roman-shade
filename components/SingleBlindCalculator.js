@@ -230,7 +230,9 @@ const SingleBlindCalculator = ({
                 key: 'face-buy-text',
                 className: "font-medium text-purple-800"
               }, [
-                React.createElement('strong', null, `Buy: ${BlindCalculations.formatPurchaseLength(Math.ceil(calculations.faceFabricHeight / BlindCalculations.getPurchaseIncrement(units)) * BlindCalculations.getPurchaseIncrement(units), units)}`)
+                React.createElement('strong', {
+                  key: 'face-buy-strong'
+                }, `Buy: ${BlindCalculations.formatPurchaseLength(Math.ceil(calculations.faceFabricHeight / BlindCalculations.getPurchaseIncrement(units)) * BlindCalculations.getPurchaseIncrement(units), units)}`)
               ])
             ])
           ])
@@ -271,7 +273,9 @@ const SingleBlindCalculator = ({
                 key: 'lining-buy-text',
                 className: "font-medium text-purple-800"
               }, [
-                React.createElement('strong', null, `Buy: ${BlindCalculations.formatPurchaseLength(Math.ceil(calculations.liningHeight / BlindCalculations.getPurchaseIncrement(units)) * BlindCalculations.getPurchaseIncrement(units), units)}`)
+                React.createElement('strong', {
+                  key: 'lining-buy-strong'
+                }, `Buy: ${BlindCalculations.formatPurchaseLength(Math.ceil(calculations.liningHeight / BlindCalculations.getPurchaseIncrement(units)) * BlindCalculations.getPurchaseIncrement(units), units)}`)
               ])
             ])
           ])
@@ -450,7 +454,9 @@ const SingleBlindCalculator = ({
           className: "font-medium"
         }, [
           'Total cord needed: ',
-          React.createElement('strong', null, BlindCalculations.formatSingleUnit(cordLengths.reduce((sum, length) => sum + length, 0), units))
+          React.createElement('strong', {
+            key: 'cord-total-strong'
+          }, BlindCalculations.formatSingleUnit(cordLengths.reduce((sum, length) => sum + length, 0), units))
         ])
       ])
     ]),
@@ -476,9 +482,9 @@ const SingleBlindCalculator = ({
             key: 'seam-title',
             className: "font-medium text-indigo-800 mb-1"
           }, 'Seam Allowances'),
-          React.createElement('p', null, `Top edge: ${BlindCalculations.formatSingleUnit(2.5, units)}`),
-          React.createElement('p', null, `Side edges: ${BlindCalculations.formatSingleUnit(7, units)} each`),
-          React.createElement('p', null, `Bottom hem: ${BlindCalculations.formatSingleUnit(30.5, units)}`)
+          React.createElement('p', { key: 'seam-top' }, `Top edge: ${BlindCalculations.formatSingleUnit(2.5, units)}`),
+          React.createElement('p', { key: 'seam-sides' }, `Side edges: ${BlindCalculations.formatSingleUnit(7, units)} each`),
+          React.createElement('p', { key: 'seam-bottom' }, `Bottom hem: ${BlindCalculations.formatSingleUnit(30.5, units)}`)
         ]),
         React.createElement('div', {
           key: 'rod-pockets',
@@ -488,8 +494,8 @@ const SingleBlindCalculator = ({
             key: 'rod-title',
             className: "font-medium text-indigo-800 mb-1"
           }, 'Rod Pocket'),
-          React.createElement('p', null, `Depth: ${BlindCalculations.formatSingleUnit(2.5, units)}`),
-          React.createElement('p', null, `Position from bottom: ${BlindCalculations.formatSingleUnit(5, units)}`)
+          React.createElement('p', { key: 'rod-depth' }, `Depth: ${BlindCalculations.formatSingleUnit(2.5, units)}`),
+          React.createElement('p', { key: 'rod-position' }, `Position from bottom: ${BlindCalculations.formatSingleUnit(5, units)}`)
         ]),
         React.createElement('div', {
           key: 'ring-spacing',
@@ -499,8 +505,8 @@ const SingleBlindCalculator = ({
             key: 'spacing-title',
             className: "font-medium text-indigo-800 mb-1"
           }, 'Ring Spacing'),
-          React.createElement('p', null, `Horizontal: ~${BlindCalculations.formatSingleUnit(width / (calculations.ringRows - 1), units)}`),
-          React.createElement('p', null, `Vertical: ~${BlindCalculations.formatSingleUnit(height / (calculations.verticalRings + 1), units)}`)
+          React.createElement('p', { key: 'spacing-horizontal' }, `Horizontal: ~${BlindCalculations.formatSingleUnit(width / (calculations.ringRows - 1), units)}`),
+          React.createElement('p', { key: 'spacing-vertical' }, `Vertical: ~${BlindCalculations.formatSingleUnit(height / (calculations.verticalRings + 1), units)}`)
         ])
       ])
     ])
