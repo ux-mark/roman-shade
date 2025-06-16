@@ -1,18 +1,5 @@
 const { useState } = React;
-// Get Lucide icons from window object
-// Note: We need to create actual React components from Lucide icon objects
-const { Calculator, Package } = window.lucide;
-
-// Create React components from Lucide icons
-const CalculatorIcon = (props) => React.createElement("svg", {
-  ...props,
-  dangerouslySetInnerHTML: { __html: Calculator.toSvg() }
-});
-
-const PackageIcon = (props) => React.createElement("svg", {
-  ...props,
-  dangerouslySetInnerHTML: { __html: Package.toSvg() }
-});
+// Use emoji instead of Lucide icons since we're having issues with them
 
 const RomanBlindCalculator = () => {
   const [units, setUnits] = useState('metric');

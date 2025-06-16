@@ -114,15 +114,7 @@ const SingleBlindCalculator = ({
         React.createElement('h3', {
           key: 'lining-title',
           className: "text-lg font-semibold mb-4 flex items-center gap-2"
-        }, [
-          React.createElement(ScissorsIcon, {
-            key: 'scissors-icon2',
-            className: "text-yellow-600",
-            width: 20,
-            height: 20
-          }),
-          'Lining Fabric'
-        ]),
+        }, '✂️ Lining Fabric'),
         React.createElement('div', {
           key: 'lining-measurements',
           className: "space-y-2"

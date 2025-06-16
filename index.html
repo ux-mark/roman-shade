@@ -7,17 +7,6 @@
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@0.152.0/dist/umd/lucide.js"></script>
-    <script>
-        // Verify Lucide icons are loaded properly
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log("Lucide icons loaded:", window.lucide != null);
-            if (!window.lucide) {
-                console.error("Lucide icons failed to load properly");
-                document.getElementById('root').innerHTML = '<div style="color:red;padding:20px;border:2px solid red;">Error: Lucide icons failed to load. Please refresh the page.</div>';
-            }
-        });
-    </script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -71,9 +60,6 @@
 
         const { StrictMode } = React;
         const { createRoot } = ReactDOM;
-        
-        // Check if Lucide icons are loaded
-        console.log("Lucide icons loaded:", window.lucide != null);
         
         // Add global error handler
         window.addEventListener('error', function(event) {
