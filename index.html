@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roman Shade Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; padding: 20px; background-color: #f8fafc; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+        const { Calculator, Ruler, Scissors, Package, BookOpen, ChevronDown, ChevronUp, AlertTriangle, CheckCircle } = lucide;
+
+        const RomanShadeCalculator = () => {
+          const [width, setWidth] = useState(80);
+          const [height, setHeight] = useState(160);
+          const [expandedStep, setExpandedStep] = useState(null);
+
+          // Helper function to convert cm to inches
+          const cmToInches = (cm) => (cm / 2.54).toFixed(1);
+
+          // Helper function to format measurements
+          const formatMeasurement = (cm) => `${cm}cm (${cmToInches(cm)}")`;
+
+          // Calculate number of ring columns based on 20-25cm spacing
+          const calculateRingRows = (width) => {
+            if (width <= 25) return 2; // Minimum 2 columns for narrow shades
+            
+            // Calculate how many rings fit with 20cm minimum spacing
+            const maxRings = Math.floor((width - 5) / 20) + 1; // 2.5cm from each edge
+            
+            // Calculate how many rings needed with 25cm maximum spacing  
+            const minRings = Math.ceil((width - 5) / 25) + 1;
+            
+            return Math.max(2, Math.min(maxRings, Math.max(minRings, 2)));
+          };
+
+          // Calculate actual spacing between rings
+          const calculateActualSpacing = (width, ringCount) => {
+            if (ringCount <= 1) return 0;
+            return (width - 5) / (ringCount - 1); // Total span divided by number of gaps
+          };
+
+          // Calculate ring positions
+          const getRingPositions = (width, ringCount) => {
+            const positions = [];
+            
+            if (ringCount === 1) {
+              positions.push(width / 2);
+            } else if (ringCount === 2) {
+              positions.push(2.5);
+              positions.push(width - 2.5);
+            } else {
+              const spacing = (width - 5) / (ringCount - 1);
+              for (let i = 0; i < ringCount; i++) {
+                positions.push(2.5 + (i * spacing));
+              }
+            }
+            
+            return positions;
+          };
+
+          // Calculate all dimensions based on input
+          const ringRows = calculateRingRows(width);
+          const actualRingSpacing = calculateActualSpacing(width, ringRows);
+          const ringPositions = getRingPositions(width, ringRows);
+          
+          const calculations = {
+            // Face fabric calculations
+            faceFabricWidth: width + 14,
+            faceFabricHeight: height + 35.5,
+            
+            // Lining calculations
+            liningWidth: width + 2,
+            liningHeight: height + 5,
+            
+            // Mounting board
+            mountingBoardLength: width - 0.5,
+            
+            // Weight rod
+            weightRodLength: width - 1,
+            
+            // Side hem allowance
+            sideHemAllowance: 3.8,
+            
+            // Bottom hem fold
+            bottomFold: 30.5,
+            
+            // Ring calculations
+            ringRows: ringRows,
+            actualRingSpacing: actualRingSpacing,
+            
+            // Vertical ring spacing (every 20cm)
+            verticalRings: Math.ceil(height / 20),
+            verticalSpacing: 20,
+            
+            // Weight pocket depth
+            weightPocketDepth: 2.8,
+            
+            // Top hem allowance
+            topHemAllowance: 2.5
+          };
+
+          // Calculate cord lengths (for right-hand draw)
+          const getCordLengths = () => {
+            const baseLength = height * 2.5; // Base calculation for cord length
+            
+            return ringPositions.map((pos, index) => {
+              // Rightmost cord is shortest, leftmost is longest
+              const additionalLength = (ringPositions.length - 1 - index) * 30;
+              return Math.round((baseLength + additionalLength) / 10) * 10; // Round to nearest 10cm
+            });
+          };
+
+          // Calculate total rings needed
+          const getTotalRings = () => {
+            return calculations.ringRows * calculations.verticalRings;
+          };
+
+          const cordLengths = getCordLengths();
+
+          // Toggle step expansion
+          const toggleStep = (stepIndex) => {
+            setExpandedStep(expandedStep === stepIndex ? null : stepIndex);
+          };
+
+          // Construction steps with calculated measurements
+          const constructionSteps = [
+            {
+              title: "Phase 1: Preparing the Base",
+              icon: React.createElement(Scissors, { className: "text-blue-600" }),
+              steps: [
+                `Position face fabric (${formatMeasurement(calculations.faceFabricWidth)} × ${formatMeasurement(calculations.faceFabricHeight)}) wrong side down on large work surface`,
+                `Press side hems: Fold in ${formatMeasurement(calculations.sideHemAllowance)} on each side with iron`,
+                `Create bottom fold: Fold up ${formatMeasurement(calculations.bottomFold)} at bottom, press, then open back up`,
+                `Center lining (${formatMeasurement(calculations.liningWidth)} × ${formatMeasurement(calculations.liningHeight)}) on face fabric, starting at the pressed bottom fold line`,
+                `Position lining edges: Should extend 1.3cm (0.5") beyond each side hem`
+              ]
+            },
+            {
+              title: "Phase 2: Hemming with Fabric Glue",
+              icon: React.createElement(Package, { className: "text-green-600" }),
+              steps: [
+                "Fold lining sides: Turn in 2.5cm (1\") on each side of lining",
+                "- Lining edge should align with face fabric edge",
+                "- Lining sits 1.3cm (0.5\") from shade edge (prevents visible white edge)",
+                "Apply fabric glue: Run thin bead along lining hem edges",
+                "Secure hems: Fold down and press with steam iron",
+                "- Steam helps distribute glue without bleeding through"
+              ]
+            },
+            {
+              title: "Phase 3: Bottom Hem and Weight Pocket",
+              icon: React.createElement(Ruler, { className: "text-purple-600" }),
+              steps: [
+                "Fold bottom hem: Bring bottom up to original pressed fold line",
+                "Create double hem: Fold again for full double hem",
+                "Taper hem edges (optional): Slightly angle the hem fold to prevent overlap",
+                `Mark weight pocket: Measure ${formatMeasurement(calculations.weightPocketDepth)} from top fold for rod pocket`,
+                "Sew pocket: Stitch along marked line, then stitch near the fold to secure all layers"
+              ]
+            },
+            {
+              title: "Phase 4: Ring Placement and Installation",
+              icon: React.createElement(CheckCircle, { className: "text-indigo-600" }),
+              steps: [
+                `Mark ${calculations.ringRows} vertical columns starting 2.5cm (1") from left edge`,
+                `Ring spacing: ${formatMeasurement(Math.round(calculations.actualRingSpacing * 10) / 10)} between columns (20-25cm/8-11" target)`,
+                `Horizontal positions: ${ringPositions.map(pos => formatMeasurement(Math.round(pos * 10) / 10)).join(', ')} from left edge`,
+                `Mark ${calculations.verticalRings} horizontal rows every ${formatMeasurement(calculations.verticalSpacing)} starting from bottom hem`,
+                `Total rings needed: ${getTotalRings()} pieces`,
+                "Thread preparation: Use doubled upholstery thread",
+                "Standard rings: Small stitches through both fabric layers",
+                "Bottom row rings: Stitch through fabric layers AND bottom hem fold for extra strength",
+                "Secure knots: Double overhand knots, add tiny dot of fabric glue to each"
+              ]
+            },
+            {
+              title: "Phase 5: Top Finishing",
+              icon: React.createElement(Scissors, { className: "text-orange-600" }),
+              steps: [
+                `Mark top edge: ${formatMeasurement(height)} from bottom`,
+                `Trim excess: Leave ${formatMeasurement(calculations.topHemAllowance)} hem allowance above finished line`,
+                "Optional: Overlock or zigzag raw edge",
+                "Install velcro: Sew loop side of velcro along top edge"
+              ]
+            },
+            {
+              title: "Phase 6: Mounting Board Preparation",
+              icon: React.createElement(Package, { className: "text-red-600" }),
+              steps: [
+                `Wrap mounting board (${formatMeasurement(calculations.mountingBoardLength)} × 5cm × 2.5cm) with matching fabric`,
+                "Corner technique: 45-degree angles, staple securely",
+                "Install velcro: Apply sticky-back hook velcro to board",
+                `Mark screw eye positions: ${calculations.ringRows} eyes aligned with ring rows underneath board`
+              ]
+            },
+            {
+              title: "Phase 7: Hardware Installation",
+              icon: React.createElement(AlertTriangle, { className: "text-yellow-600" }),
+              steps: [
+                "Create pilot holes: Use awl or ice pick to prevent wood splitting",
+                `Install screw eyes: ${calculations.ringRows} eyes aligned with ring columns`,
+                `Insert weight rod: Cut to ${formatMeasurement(calculations.weightRodLength)}, tape sharp ends, slide into pocket`,
+                "Close pocket ends: Hand-stitch openings closed"
+              ]
+            },
+            {
+              title: "Phase 8: Cord Installation",
+              icon: React.createElement(Calculator, { className: "text-teal-600" }),
+              steps: [
+                "Cord lengths needed (right-hand draw):",
+                ...cordLengths.map((length, index) => `- Column ${index + 1}: ${formatMeasurement(length)}`),
+                `Total cord needed: approximately ${formatMeasurement(Math.round(cordLengths.reduce((a, b) => a + b, 0) / 100) * 100)}`,
+                "Start at bottom rings: Tie cord with double overhand knot",
+                "Thread vertically: Up through all rings in each column",
+                "Pass through screw eyes: Each cord goes through its eye and all eyes to the right",
+                "Equal tension: Ensure all cords have same tension when shade is down",
+                "Tie master knot: Gather all cords, tie single knot near top",
+                "Braid cords: Braid remaining length to prevent tangling"
+              ]
+            }
+          ];
+
+          return React.createElement('div', { className: "max-w-4xl mx-auto p-6 bg-white" }, [
+            // Header
+            React.createElement('div', { className: "mb-8 text-center", key: "header" }, [
+              React.createElement('h1', { 
+                className: "text-3xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2",
+                key: "title"
+              }, [
+                React.createElement(Calculator, { className: "text-blue-600", key: "icon" }),
+                "Roman Shade Calculator"
+              ]),
+              React.createElement('p', { 
+                className: "text-gray-600",
+                key: "subtitle"
+              }, "Enter your desired blind dimensions to calculate all measurements")
+            ]),
+
+            // Input Section
+            React.createElement('div', { className: "bg-blue-50 p-6 rounded-lg mb-8", key: "inputs" }, [
+              React.createElement('h2', { 
+                className: "text-xl font-semibold mb-4 flex items-center gap-2",
+                key: "input-title"
+              }, [
+                React.createElement(Ruler, { className: "text-blue-600", key: "ruler-icon" }),
+                "Finished Shade Dimensions"
+              ]),
+              React.createElement('div', { className: "grid md:grid-cols-2 gap-4", key: "input-grid" }, [
+                React.createElement('div', { key: "width-input" }, [
+                  React.createElement('label', { 
+                    className: "block text-sm font-medium text-gray-700 mb-2",
+                    key: "width-label"
+                  }, "Width (cm)"),
+                  React.createElement('input', { 
+                    key: "width-field",
+                    type: "number",
+                    value: width,
+                    onChange: (e) => setWidth(Number(e.target.value)),
+                    min: "30",
+                    max: "300",
+                    className: "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  }),
+                  React.createElement('p', { 
+                    className: "text-sm text-gray-500 mt-1",
+                    key: "width-inches"
+                  }, `${cmToInches(width)}" inches`)
+                ]),
+                React.createElement('div', { key: "height-input" }, [
+                  React.createElement('label', { 
+                    className: "block text-sm font-medium text-gray-700 mb-2",
+                    key: "height-label"
+                  }, "Height (cm)"),
+                  React.createElement('input', { 
+                    key: "height-field",
+                    type: "number",
+                    value: height,
+                    onChange: (e) => setHeight(Number(e.target.value)),
+                    min: "50",
+                    max: "400",
+                    className: "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  }),
+                  React.createElement('p', { 
+                    className: "text-sm text-gray-500 mt-1",
+                    key: "height-inches"
+                  }, `${cmToInches(height)}" inches`)
+                ])
+              ])
+            ]),
+
+            // Fabric Requirements
+            React.createElement('div', { className: "grid md:grid-cols-2 gap-6 mb-8", key: "fabric-reqs" }, [
+              React.createElement('div', { className: "bg-green-50 p-6 rounded-lg", key: "face-fabric" }, [
+                React.createElement('h3', { 
+                  className: "text-lg font-semibold mb-4 flex items-center gap-2",
+                  key: "face-title"
+                }, [
+                  React.createElement(Scissors, { className: "text-green-600", key: "scissors1" }),
+                  "Face Fabric"
+                ]),
+                React.createElement('div', { className: "space-y-2", key: "face-details" }, [
+                  React.createElement('p', { key: "face-width" }, [
+                    React.createElement('span', { className: "font-medium", key: "fw-label" }, "Width: "),
+                    formatMeasurement(calculations.faceFabricWidth)
+                  ]),
+                  React.createElement('p', { key: "face-height" }, [
+                    React.createElement('span', { className: "font-medium", key: "fh-label" }, "Height: "),
+                    formatMeasurement(calculations.faceFabricHeight)
+                  ]),
+                  React.createElement('p', { 
+                    className: "text-sm text-gray-600 mt-2",
+                    key: "face-note"
+                  }, [
+                    React.createElement('em', { key: "face-em" }, `Includes ${formatMeasurement(14)} width + ${formatMeasurement(35.5)} height allowances`)
+                  ])
+                ])
+              ]),
+              React.createElement('div', { className: "bg-yellow-50 p-6 rounded-lg", key: "lining-fabric" }, [
+                React.createElement('h3', { 
+                  className: "text-lg font-semibold mb-4 flex items-center gap-2",
+                  key: "lining-title"
+                }, [
+                  React.createElement(Scissors, { className: "text-yellow-600", key: "scissors2" }),
+                  "Lining Fabric"
+                ]),
+                React.createElement('div', { className: "space-y-2", key: "lining-details" }, [
+                  React.createElement('p', { key: "lining-width" }, [
+                    React.createElement('span', { className: "font-medium", key: "lw-label" }, "Width: "),
+                    formatMeasurement(calculations.liningWidth)
+                  ]),
+                  React.createElement('p', { key: "lining-height" }, [
+                    React.createElement('span', { className: "font-medium", key: "lh-label" }, "Height: "),
+                    formatMeasurement(calculations.liningHeight)
+                  ]),
+                  React.createElement('p', { 
+                    className: "text-sm text-gray-600 mt-2",
+                    key: "lining-note"
+                  }, [
+                    React.createElement('em', { key: "lining-em" }, `Includes ${formatMeasurement(2)} width + ${formatMeasurement(5)} height allowances`)
+                  ])
+                ])
+              ])
+            ]),
+
+            // Hardware Requirements
+            React.createElement('div', { className: "bg-purple-50 p-6 rounded-lg mb-8", key: "hardware" }, [
+              React.createElement('h3', { 
+                className: "text-lg font-semibold mb-4 flex items-center gap-2",
+                key: "hardware-title"
+              }, [
+                React.createElement(Package, { className: "text-purple-600", key: "package-icon" }),
+                "Hardware & Supplies"
+              ]),
+              React.createElement('div', { className: "grid md:grid-cols-2 gap-4", key: "hardware-grid" }, [
+                React.createElement('div', { key: "hardware-col1" }, [
+                  React.createElement('p', { key: "mounting-board" }, [
+                    React.createElement('span', { className: "font-medium", key: "mb-label" }, "Mounting Board: "),
+                    `${formatMeasurement(calculations.mountingBoardLength)} × 5cm × 2.5cm`
+                  ]),
+                  React.createElement('p', { key: "weight-rod" }, [
+                    React.createElement('span', { className: "font-medium", key: "wr-label" }, "Weight Rod: "),
+                    formatMeasurement(calculations.weightRodLength)
+                  ]),
+                  React.createElement('p', { key: "rings" }, [
+                    React.createElement('span', { className: "font-medium", key: "rings-label" }, "Roman Shade Rings: "),
+                    `${getTotalRings()} pieces`
+                  ]),
+                  React.createElement('p', { key: "screw-eyes" }, [
+                    React.createElement('span', { className: "font-medium", key: "se-label" }, "Screw Eyes: "),
+                    `${calculations.ringRows} pieces`
+                  ])
+                ]),
+                React.createElement('div', { key: "hardware-col2" }, [
+                  React.createElement('p', { key: "cord" }, [
+                    React.createElement('span', { className: "font-medium", key: "cord-label" }, "Shade Lift Cord: "),
+                    `${Math.round(cordLengths.reduce((a, b) => a + b, 0) / 100)} meters total`
+                  ]),
+                  React.createElement('p', { key: "ring-rows" }, [
+                    React.createElement('span', { className: "font-medium", key: "rr-label" }, "Ring Rows: "),
+                    `${calculations.ringRows} vertical columns`
+                  ]),
+                  React.createElement('p', { key: "ring-levels" }, [
+                    React.createElement('span', { className: "font-medium", key: "rl-label" }, "Ring Levels: "),
+                    `${calculations.verticalRings} horizontal rows`
+                  ])
+                ])
+              ])
+            ]),
+
+            // Ring Layout
+            React.createElement('div', { className: "bg-gray-50 p-6 rounded-lg mb-8", key: "ring-layout" }, [
+              React.createElement('h3', { 
+                className: "text-lg font-semibold mb-4",
+                key: "ring-layout-title"
+              }, "Ring Placement Layout"),
+              
+              React.createElement('div', { className: "mb-4", key: "horizontal-positions" }, [
+                React.createElement('h4', { 
+                  className: "font-medium mb-2",
+                  key: "hp-title"
+                }, "Horizontal Ring Positions (from left edge):"),
+                React.createElement('div', { className: "flex flex-wrap gap-2", key: "hp-badges" }, 
+                  ringPositions.map((pos, index) => 
+                    React.createElement('span', { 
+                      key: index,
+                      className: "bg-blue-100 px-3 py-1 rounded"
+                    }, formatMeasurement(Math.round(pos * 10) / 10))
+                  )
+                )
+              ]),
+
+              React.createElement('div', { className: "mb-4", key: "column-spacing" }, [
+                React.createElement('h4', { 
+                  className: "font-medium mb-2",
+                  key: "cs-title"
+                }, "Ring Column Spacing:"),
+                React.createElement('p', { key: "cs-metric" }, "Metric: 20-25cm between rings, 2.5cm from edges"),
+                React.createElement('p', { key: "cs-imperial" }, "Imperial: 8-11\" between rings, 1\" from edges"),
+                React.createElement('p', { key: "cs-current" }, `Current spacing: ${formatMeasurement(Math.round(calculations.actualRingSpacing * 10) / 10)}`)
+              ]),
+
+              React.createElement('div', { className: "mb-4", key: "vertical-spacing" }, [
+                React.createElement('h4', { 
+                  className: "font-medium mb-2",
+                  key: "vs-title"
+                }, "Vertical Ring Spacing:"),
+                React.createElement('p', { key: "vs-info" }, `Every ${formatMeasurement(calculations.verticalSpacing)} starting from bottom hem`)
+              ]),
+
+              React.createElement('div', { className: "border-2 border-dashed border-gray-300 p-4 bg-white", key: "visual-layout" }, [
+                React.createElement('div', { 
+                  className: "text-center text-sm text-gray-600 mb-2",
+                  key: "visual-title"
+                }, "Visual Ring Layout"),
+                React.createElement('div', { className: "font-mono text-xs", key: "visual-grid" }, 
+                  Array.from({ length: calculations.verticalRings }, (_, row) => 
+                    React.createElement('div', { 
+                      key: row,
+                      className: "flex justify-between items-center py-1"
+                    }, [
+                      React.createElement('span', { 
+                        className: "text-gray-500",
+                        key: "height-label"
+                      }, `${formatMeasurement((calculations.verticalRings - 1 - row) * 20)}:`),
+                      React.createElement('div', { 
+                        className: "flex-1 flex justify-around mx-4",
+                        key: "ring-row"
+                      }, 
+                        ringPositions.map((_, col) => 
+                          React.createElement('span', { 
+                            key: col,
+                            className: "text-blue-600"
+                          }, "○")
+                        )
+                      )
+                    ])
+                  )
+                )
+              ])
+            ]),
+
+            // Cord Lengths
+            React.createElement('div', { className: "bg-orange-50 p-6 rounded-lg mb-8", key: "cord-lengths" }, [
+              React.createElement('h3', { 
+                className: "text-lg font-semibold mb-4",
+                key: "cord-title"
+              }, "Cord Lengths (Right-hand Draw)"),
+              React.createElement('div', { className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4", key: "cord-grid" }, 
+                cordLengths.map((length, index) => 
+                  React.createElement('div', { 
+                    key: index,
+                    className: "text-center"
+                  }, [
+                    React.createElement('div', { 
+                      className: "bg-orange-200 p-3 rounded",
+                      key: "cord-box"
+                    }, [
+                      React.createElement('div', { 
+                        className: "font-medium",
+                        key: "column-num"
+                      }, `Column ${index + 1}`),
+                      React.createElement('div', { 
+                        className: "text-sm",
+                        key: "cord-length"
+                      }, formatMeasurement(length))
+                    ])
+                  ])
+                )
+              ),
+              React.createElement('p', { 
+                className: "text-sm text-gray-600 mt-3",
+                key: "total-cord"
+              }, [
+                React.createElement('em', { key: "total-em" }, `Total cord needed: approximately ${formatMeasurement(Math.round(cordLengths.reduce((a, b) => a + b, 0) / 100) * 100)}`)
+              ])
+            ]),
+
+            // Safety Warning
+            React.createElement('div', { className: "mt-8 p-4 bg-red-50 border-l-4 border-red-500", key: "safety-warning" }, [
+              React.createElement('p', { 
+                className: "text-sm text-red-700",
+                key: "safety-text"
+              }, [
+                React.createElement('strong', { key: "safety-strong" }, "Safety Warning: "),
+                "This basic roman shade uses exposed cords with NO safety mechanisms. Do not install in areas accessible to babies, toddlers, or small children due to strangulation hazard."
+              ])
+            ])
+          ]);
+        };
+
+        ReactDOM.render(React.createElement(RomanShadeCalculator), document.getElementById('root'));
+    </script>
+</body>
+</html>
