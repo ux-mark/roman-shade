@@ -7,9 +7,12 @@ const SingleBlindCalculator = ({
   units, 
   fabricWidth 
 }) => {
-  const calculations = BlindCalculations.getBlindCalculations(width, height);
-  const ringPositions = BlindCalculations.getRingPositionsForBlind(width);
-  const cordLengths = BlindCalculations.getCordLengthsForBlind(width, height);
+  const { useState } = React;
+  const [isInnerMeasurement, setIsInnerMeasurement] = useState(false);
+  
+  const calculations = BlindCalculations.getBlindCalculations(width, height, isInnerMeasurement);
+  const ringPositions = BlindCalculations.getRingPositionsForBlind(width, isInnerMeasurement);
+  const cordLengths = BlindCalculations.getCordLengthsForBlind(width, height, isInnerMeasurement);
   
   // Get Lucide icons
   const { Ruler, Package, ShoppingCart, Scissors } = lucideReact;
@@ -75,6 +78,56 @@ const SingleBlindCalculator = ({
             className: "text-sm text-gray-500 mt-1"
           }, units === 'metric' ? `= ${BlindCalculations.cmToFeetInches(height)}` : `= ${height.toFixed(1)}cm`)
         ])
+      ]),
+      
+      // Inner measurement toggle
+      React.createElement('div', { 
+        key: 'inner-measurement-toggle',
+        className: "mt-4 bg-gray-100 p-3 rounded-md"
+      }, [
+        React.createElement('div', {
+          key: 'toggle-container',
+          className: "flex justify-between items-center"
+        }, [
+          React.createElement('span', {
+            key: 'toggle-label',
+            className: "text-sm font-medium text-gray-700"
+          }, "Inner Window Measurement"),
+          
+          React.createElement('div', {
+            key: 'toggle-controls',
+            className: "flex items-center gap-3"
+          }, [
+            React.createElement('span', {
+              key: 'toggle-status',
+              className: "text-xs",
+              style: { color: isInnerMeasurement ? '#1e40af' : '#6b7280' }
+            }, isInnerMeasurement ? "Enabled" : "Disabled"),
+            
+            React.createElement('button', {
+              key: 'toggle-btn',
+              type: "button",
+              onClick: () => setIsInnerMeasurement(!isInnerMeasurement),
+              className: "rounded-md px-3 py-1 text-xs font-medium",
+              style: {
+                backgroundColor: isInnerMeasurement ? '#3b82f6' : '#e5e7eb',
+                color: isInnerMeasurement ? 'white' : '#4b5563'
+              }
+            }, isInnerMeasurement ? "ON" : "OFF")
+          ])
+        ])
+      ])
+    ]),
+
+    // Precision note
+    React.createElement('div', { 
+      key: 'precision-note',
+      className: "mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 text-sm text-yellow-800"
+    }, [
+      React.createElement('p', {}, [
+        React.createElement('strong', {}, "Note: "),
+        `All measurements are automatically reduced by ${units === 'metric' ? '0.5cm' : '1/4"'} for manufacturing precision. `,
+        isInnerMeasurement && `Inner window measurement adds ${units === 'metric' ? '1cm' : '3/8"'} to width for proper fit.`
       ])
     ]),
 
@@ -159,7 +212,7 @@ const SingleBlindCalculator = ({
           React.createElement('p', {
             key: 'lining-allowances',
             className: "text-sm text-gray-600 mt-2"
-          }, React.createElement('em', null, `Includes ${BlindCalculations.formatSingleUnit(2, units)} width + ${BlindCalculations.formatSingleUnit(5, units)} height allowances`))
+          }, React.createElement('em', null, `Includes ${BlindCalculations.formatSingleUnit(2.5, units)} width + ${BlindCalculations.formatSingleUnit(5, units)} height allowances`))
         ])
       ])
     ]),
@@ -278,6 +331,116 @@ const SingleBlindCalculator = ({
                 }, `Buy: ${BlindCalculations.formatPurchaseLength(Math.ceil(calculations.liningHeight / BlindCalculations.getPurchaseIncrement(units)) * BlindCalculations.getPurchaseIncrement(units), units)}`)
               ])
             ])
+          ])
+        ])
+      ])
+    ]),
+
+    // Cutting Guide for Single Blind
+    React.createElement('div', {
+      key: 'cutting-guide',
+      className: "bg-green-50 p-6 rounded-lg mb-8"
+    }, [
+      React.createElement('h3', {
+        key: 'cutting-title',
+        className: "text-lg font-semibold mb-4 flex items-center gap-2"
+      }, [
+        React.createElement(Scissors, {
+          key: 'scissors-icon',
+          className: "text-green-600",
+          size: 20
+        }),
+        'Cutting Guide for Each Blind'
+      ]),
+      React.createElement('div', {
+        key: 'cutting-explanation',
+        className: "mb-4 bg-green-100 p-4 rounded-md text-sm text-green-800"
+      }, [
+        React.createElement('p', {
+          key: 'cutting-explanation-text',
+          className: "mb-2"
+        }, [
+          React.createElement('strong', {}, "Fabric Measurement Adjustments: "), 
+          "Your fabric includes these precision adjustments:"
+        ]),
+        React.createElement('ul', {
+          key: 'cutting-explanation-list',
+          className: "list-disc pl-5 space-y-1"
+        }, [
+          React.createElement('li', {}, [
+            React.createElement('strong', {}, "Face Fabric Width: "), 
+            `Finished width + 14${units === 'metric' ? 'cm' : '"'} (7${units === 'metric' ? 'cm' : '"'} seam allowance on each side)`
+          ]),
+          React.createElement('li', {}, [
+            React.createElement('strong', {}, "Face Fabric Height: "), 
+            `Finished height + 35.5${units === 'metric' ? 'cm' : '"'} (30.5${units === 'metric' ? 'cm' : '"'} for bottom hem + 2.5${units === 'metric' ? 'cm' : '"'} for top edge + 2.5${units === 'metric' ? 'cm' : '"'} safety margin)`
+          ]),
+          React.createElement('li', {}, [
+            React.createElement('strong', {}, "Lining Width: "), 
+            `Finished width + 2.5${units === 'metric' ? 'cm' : '"'} (slightly wider than finished blind)`
+          ]),
+          React.createElement('li', {}, [
+            React.createElement('strong', {}, "Lining Height: "), 
+            `Finished height + 5${units === 'metric' ? 'cm' : '"'} (accounts for top and bottom edges)`
+          ])
+        ])
+      ]),
+      React.createElement('div', {
+        key: 'cutting-grid',
+        className: "grid md:grid-cols-2 gap-4"
+      }, [
+        React.createElement('div', {
+          key: 'face-fabric-cut',
+          className: "bg-white p-4 rounded-lg border border-green-200"
+        }, [
+          React.createElement('h4', {
+            key: 'face-fabric-cut-title',
+            className: "font-medium text-green-800 mb-3"
+          }, 'Face Fabric'),
+          React.createElement('div', {
+            key: 'face-fabric-cut-details',
+            className: "space-y-2 text-sm"
+          }, [
+            React.createElement('p', {
+              key: 'face-fabric-cut-dimensions',
+            }, [
+              React.createElement('span', {
+                key: 'face-fabric-cut-dimensions-label',
+                className: "font-medium"
+              }, "Cut Size: "),
+              `${BlindCalculations.formatSingleUnit(calculations.faceFabricWidth, units)} × ${BlindCalculations.formatSingleUnit(calculations.faceFabricHeight, units)}`
+            ]),
+            React.createElement('p', {
+              key: 'face-fabric-cut-note',
+              className: "text-xs text-gray-600 mt-2 italic"
+            }, 'Includes necessary allowances for all edges and seams')
+          ])
+        ]),
+        React.createElement('div', {
+          key: 'lining-fabric-cut',
+          className: "bg-white p-4 rounded-lg border border-green-200"
+        }, [
+          React.createElement('h4', {
+            key: 'lining-fabric-cut-title',
+            className: "font-medium text-green-800 mb-3"
+          }, 'Lining Fabric'),
+          React.createElement('div', {
+            key: 'lining-fabric-cut-details',
+            className: "space-y-2 text-sm"
+          }, [
+            React.createElement('p', {
+              key: 'lining-fabric-cut-dimensions',
+            }, [
+              React.createElement('span', {
+                key: 'lining-fabric-cut-dimensions-label',
+                className: "font-medium"
+              }, "Cut Size: "),
+              `${BlindCalculations.formatSingleUnit(calculations.liningWidth, units)} × ${BlindCalculations.formatSingleUnit(calculations.liningHeight, units)}`
+            ]),
+            React.createElement('p', {
+              key: 'lining-fabric-cut-note',
+              className: "text-xs text-gray-600 mt-2 italic"
+            }, 'Sized to fit perfectly behind the face fabric')
           ])
         ])
       ])

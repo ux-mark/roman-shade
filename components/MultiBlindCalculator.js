@@ -10,7 +10,12 @@ const MultiBlindCalculator = ({
   
   const addBlind = () => {
     if (blinds.length < 10) {
-      setBlinds([...blinds, { width: 80, height: 160, name: `Blind ${blinds.length + 1}` }]);
+      setBlinds([...blinds, { 
+        width: 80, 
+        height: 160, 
+        name: `Blind ${blinds.length + 1}`,
+        isInnerMeasurement: false 
+      }]);
     }
   };
 
@@ -24,6 +29,9 @@ const MultiBlindCalculator = ({
     const newBlinds = [...blinds];
     if (field === 'name') {
       // For name field, store as string
+      newBlinds[index][field] = value;
+    } else if (field === 'isInnerMeasurement') {
+      // For boolean fields, store as is
       newBlinds[index][field] = value;
     } else {
       // For numeric fields, convert to number
@@ -116,6 +124,57 @@ const MultiBlindCalculator = ({
             }, "E.g. Living Room, Kitchen, Bedroom Window, etc.")
           ]),
           
+          // Inner measurement toggle and blind note
+          React.createElement('div', {
+            key: `blind-${index}-measurement-info`,
+            className: "mb-4"
+          }, [
+            // Measurement note
+            React.createElement('div', { 
+              key: `blind-${index}-note`,
+              className: "bg-yellow-50 border-l-4 border-yellow-400 p-3 text-xs text-yellow-800 mb-2"
+            }, [
+              React.createElement('p', { key: `blind-${index}-note-text` }, [
+                React.createElement('strong', { key: `blind-${index}-note-strong` }, "Note: "),
+                `All measurements are automatically reduced by ${units === 'metric' ? '0.5cm' : '1/4"'} for manufacturing precision. `,
+                blind.isInnerMeasurement && `Inner window measurement adds ${units === 'metric' ? '1cm' : '3/8"'} to width for proper fit.`
+              ])
+            ]),
+            
+            // Toggle with simple design
+            React.createElement('div', {
+              key: `blind-${index}-toggle-container`,
+              className: "bg-gray-100 p-3 rounded flex justify-between items-center"
+            }, [
+              React.createElement('span', {
+                key: `blind-${index}-toggle-label`,
+                className: "text-sm font-medium text-gray-700"
+              }, "Inner Window Measurement"),
+              
+              React.createElement('div', {
+                key: `blind-${index}-toggle-controls`,
+                className: "flex items-center gap-3"
+              }, [
+                React.createElement('span', {
+                  key: `blind-${index}-toggle-status`,
+                  className: "text-xs",
+                  style: { color: blind.isInnerMeasurement ? '#1e40af' : '#6b7280' }
+                }, blind.isInnerMeasurement ? "Enabled" : "Disabled"),
+                
+                React.createElement('button', {
+                  key: `blind-${index}-toggle-btn`,
+                  type: "button",
+                  onClick: () => updateBlind(index, 'isInnerMeasurement', !blind.isInnerMeasurement),
+                  className: "rounded-md px-3 py-1 text-xs font-medium",
+                  style: {
+                    backgroundColor: blind.isInnerMeasurement ? '#3b82f6' : '#e5e7eb',
+                    color: blind.isInnerMeasurement ? 'white' : '#4b5563'
+                  }
+                }, blind.isInnerMeasurement ? "ON" : "OFF")
+              ])
+            ])
+          ]),
+        
           React.createElement('div', {
             key: `blind-${index}-inputs`,
             className: "grid md:grid-cols-2 gap-4"
@@ -184,6 +243,39 @@ const MultiBlindCalculator = ({
           size: 20
         }),
         'Cutting Guide for Each Blind'
+      ]),
+      React.createElement('div', {
+        key: 'cutting-explanation',
+        className: "mb-4 bg-green-100 p-4 rounded-md text-sm text-green-800"
+      }, [
+        React.createElement('p', {
+          key: 'cutting-explanation-text',
+          className: "mb-2"
+        }, [
+          React.createElement('strong', {}, "Measurement Adjustments: "), 
+          "Each blind's fabric includes the following adjustments:"
+        ]),
+        React.createElement('ul', {
+          key: 'cutting-explanation-list',
+          className: "list-disc pl-5 space-y-1"
+        }, [
+          React.createElement('li', {}, [
+            React.createElement('strong', {}, "Face Fabric Width: "), 
+            `Finished width + 14${units === 'metric' ? 'cm' : '"'} (7${units === 'metric' ? 'cm' : '"'} seam allowance on each side)`
+          ]),
+          React.createElement('li', {}, [
+            React.createElement('strong', {}, "Face Fabric Height: "), 
+            `Finished height + 35.5${units === 'metric' ? 'cm' : '"'} (30.5${units === 'metric' ? 'cm' : '"'} for bottom hem + 2.5${units === 'metric' ? 'cm' : '"'} for top edge + 2.5${units === 'metric' ? 'cm' : '"'} safety margin)`
+          ]),
+          React.createElement('li', {}, [
+            React.createElement('strong', {}, "Lining Width: "), 
+            `Finished width + 2.5${units === 'metric' ? 'cm' : '"'} (slightly wider than finished blind)`
+          ]),
+          React.createElement('li', {}, [
+            React.createElement('strong', {}, "Lining Height: "), 
+            `Finished height + 5${units === 'metric' ? 'cm' : '"'} (accounts for top and bottom edges)`
+          ])
+        ])
       ]),
       React.createElement('div', {
         key: 'cutting-guide-list',

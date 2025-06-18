@@ -2,31 +2,50 @@
 
 const BlindCalculations = {
   // Basic calculations for blind dimensions
-  getBlindCalculations: function(width, height) {
+  getBlindCalculations: function(width, height, isInnerMeasurement = false) {
+    // Apply adjustment if inner measurement is selected (add to width)
+    const adjustedWidth = isInnerMeasurement ? width + 1 : width;
+    
+    // Reduce all lengths by 0.5 cm / 1/4" for manufacturing precision
+    const lengthReduction = 0.5;
+    const reducedWidth = adjustedWidth - lengthReduction;
+    const reducedHeight = height - lengthReduction;
+    
     return {
       // Face fabric dimensions (with allowances)
-      faceFabricWidth: width + 14, // 7cm on each side
-      faceFabricHeight: height + 35.5, // 30.5cm for bottom hem + 2.5cm for top edge + 2.5cm safety
+      faceFabricWidth: reducedWidth + 14, // 7cm on each side
+      faceFabricHeight: reducedHeight + 35.5, // 30.5cm for bottom hem + 2.5cm for top edge + 2.5cm safety
       
       // Lining dimensions (slightly smaller than face fabric)
-      liningWidth: width + 2, // 1cm on each side
-      liningHeight: height + 5,
+      liningWidth: reducedWidth + 2.5, // 2.5cm or 1" wider than finished width
+      liningHeight: reducedHeight + 5,
       
       // Support pieces
-      mountingBoardLength: width - 0.5, // slight extension beyond the blind
-      weightRodLength: width - 1, // slightly shorter than blind width
+      mountingBoardLength: reducedWidth - 0.5, // slight extension beyond the blind
+      weightRodLength: reducedWidth - 1, // slightly shorter than blind width
       
       // Ring calculations
-      ringRows: Math.max(3, Math.ceil(width / 16)),
-      verticalRings: Math.ceil(height / 20),
+      ringRows: Math.max(3, Math.ceil(reducedWidth / 16)),
+      verticalRings: Math.ceil(reducedHeight / 20),
+      
+      // Store original dimensions for reference
+      originalWidth: width,
+      originalHeight: height,
+      isInnerMeasurement: isInnerMeasurement,
     };
   },
   
   // Calculate ring positions for a blind
-  getRingPositionsForBlind: function(blindWidth) {
-    const ringRows = Math.max(3, Math.ceil(blindWidth / 16));
+  getRingPositionsForBlind: function(blindWidth, isInnerMeasurement = false) {
+    // Apply adjustment if inner measurement is selected
+    const adjustedWidth = isInnerMeasurement ? blindWidth + 1 : blindWidth;
+    
+    // Reduce length by 0.5 cm / 1/4" for manufacturing precision
+    const reducedWidth = adjustedWidth - 0.5;
+    
+    const ringRows = Math.max(3, Math.ceil(reducedWidth / 16));
     const positions = [];
-    const spacing = (blindWidth - 5) / Math.max(2, ringRows - 1); // 2.5cm from each edge
+    const spacing = (reducedWidth - 5) / Math.max(2, ringRows - 1); // 2.5cm from each edge
     
     for (let i = 0; i < ringRows; i++) {
       positions.push(2.5 + (i * spacing));
@@ -35,9 +54,16 @@ const BlindCalculations = {
   },
   
   // Calculate cord lengths for a blind
-  getCordLengthsForBlind: function(blindWidth, blindHeight) {
-    const baseLength = blindHeight * 2.5;
-    const ringPositions = this.getRingPositionsForBlind(blindWidth);
+  getCordLengthsForBlind: function(blindWidth, blindHeight, isInnerMeasurement = false) {
+    // Apply adjustment if inner measurement is selected
+    const adjustedWidth = isInnerMeasurement ? blindWidth + 1 : blindWidth;
+    
+    // Reduce lengths by 0.5 cm / 1/4" for manufacturing precision
+    const reducedWidth = adjustedWidth - 0.5;
+    const reducedHeight = blindHeight - 0.5;
+    
+    const baseLength = reducedHeight * 2.5;
+    const ringPositions = this.getRingPositionsForBlind(reducedWidth, isInnerMeasurement);
     
     return ringPositions.map((pos, index) => {
       const additionalLength = (ringPositions.length - 1 - index) * 30;
@@ -49,15 +75,24 @@ const BlindCalculations = {
   calculateMultiBlindRequirements: function(blinds, fabricWidth, units) {
     // Calculate individual blind requirements
     const requirements = blinds.map((blind, index) => {
-      const faceFabricWidth = blind.width + 14;
-      const faceFabricHeight = blind.height + 35.5;
-      const liningWidth = blind.width + 2;
-      const liningHeight = blind.height + 5;
+      // Apply adjustment if inner measurement is selected
+      const adjustedWidth = blind.isInnerMeasurement ? blind.width + 1 : blind.width;
+      
+      // Reduce all lengths by 0.5 cm / 1/4" for manufacturing precision
+      const lengthReduction = 0.5;
+      const reducedWidth = adjustedWidth - lengthReduction;
+      const reducedHeight = blind.height - lengthReduction;
+      
+      const faceFabricWidth = reducedWidth + 14;
+      const faceFabricHeight = reducedHeight + 35.5;
+      const liningWidth = reducedWidth + 2.5;
+      const liningHeight = reducedHeight + 5;
 
       return {
         blindIndex: index + 1,
         originalWidth: blind.width,
         originalHeight: blind.height,
+        isInnerMeasurement: blind.isInnerMeasurement || false,
         faceFabric: { width: faceFabricWidth, height: faceFabricHeight },
         lining: { width: liningWidth, height: liningHeight }
       };
